@@ -3,7 +3,7 @@ import FormularioEmpleado from '../components/FormularioEmpleado'; // Componente
 import TablaEmpleados from '../components/TablaEmpleados'; // Componente para mostrar la tabla de empleados
 import BuscarEmpleado from '../components/BuscarEmpleado'; // Componente para buscar empleados
 
-const token = sessionStorage.getItem('token'); // Obtiene el token de sesión del almacenamiento local
+//const token = sessionStorage.getItem('token'); // Obtiene el token de sesión del almacenamiento local
 
 function EmpleadosPage() {
   // Estado para manejar los datos del empleado actual en el formulario
@@ -92,7 +92,8 @@ function EmpleadosPage() {
     try {
       const res = await fetch('http://localhost:8080/empleados', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
 
@@ -138,6 +139,7 @@ function EmpleadosPage() {
     try {
       const res = await fetch(`http://localhost:8080/empleados/${id}`, {
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
@@ -145,6 +147,7 @@ function EmpleadosPage() {
       if (!res.ok) throw new Error('Empleado no encontrado');
 
       const data = await res.json();
+      console.log('Empleado encontrado:', data); // Verifica el empleado encontrado
       setEmpleado(data); // 🔁 ← Aquí cargamos directamente en el formulario
       setEmpleadoEncontrado(data); // Actualiza el estado con el empleado encontrado
     } catch (error) {
@@ -157,12 +160,18 @@ function EmpleadosPage() {
   const actualizarEmpleado = async () => {
     try {
 
+      if (!empleado.id) {
+        setMensaje("❌ No se puede actualizar sin un ID de empleado.");
+        return;
+      } // Verifica que el ID del empleado esté presente
+
       console.log('Empleado a actualizar:', empleado); // Verifica el empleado que se va a actualizar
       const res = await fetch(`http://localhost:8080/empleados/${empleado.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+
         },
         body: JSON.stringify(empleado),
       });
@@ -170,8 +179,23 @@ function EmpleadosPage() {
       if (!res.ok) throw new Error('Error al actualizar');
   
       const data = await res.json();
+      console.log('Empleado actualizado:', data); // Verifica el empleado actualizado
+      // Muestra un mensaje de éxito y limpia el formulario
       setMensaje(`✅ Empleado actualizado correctamente:\n🆔 ${data.id}\n👤 ${data.nombreEmpleado}`);
+      
+      // Limpia el formulario después de actualizar
+      setEmpleadoEncontrado(null);
       listarEmpleados();
+/*
+      // Limpia el formulario después de actualizar
+      setEmpleado({
+        nombreEmpleado: '',
+        cargo: '',
+        telefono: '',
+        usuario: { login: '', clave: '', rol: 'EMPLEADO' },
+      });
+      */
+
     } catch (error) {
       console.error('Error al actualizar:', error);
       setMensaje("❌ Error al actualizar el empleado");
@@ -191,6 +215,7 @@ function EmpleadosPage() {
             onChange={handleChange}
             onSubmit={registrarEmpleado}
             onEliminar={eliminarEmpleado}
+            onActualizar={actualizarEmpleado}
           />
 
           {/* Mensaje de éxito o error */}

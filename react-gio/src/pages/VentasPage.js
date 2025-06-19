@@ -1,11 +1,10 @@
-// src/pages/VentasPage.js
-
-import React, { useState } from 'react';
-import FormularioVenta from '../components/FormularioVenta'; // Componente para el formulario de ventas
-import TablaProductosVenta from '../components/TablaProductosVenta'; // Componente para mostrar los productos agregados a la venta
+import React, { useState } from "react";
+import FormularioVenta from "../components/FormularioVenta";
+import TablaProductosVenta from "../components/TablaProductosVenta";
+import { formatearMiles } from "../utils/formato";
+import ResumenVenta from "../components/ResumenVenta";
 
 function VentasPage() {
-  // Estado para manejar el producto actual que se está agregando a la venta
   const [productoActual, setProductoActual] = useState({
     id: '',
     nombre: '',
@@ -15,66 +14,160 @@ function VentasPage() {
     descuento: 0,
   });
 
-  // Estado para manejar la lista de productos agregados a la venta
+  // Estado para manejar los productos agregados, dinero recibido, forma de pago y mensajes
+  // y los resultados de búsqueda
   const [productosAgregados, setProductosAgregados] = useState([]);
-
-  // Estado para manejar el dinero recibido del cliente
   const [dineroRecibido, setDineroRecibido] = useState(0);
+  const [formaDePago, setFormaDePago] = useState("Efectivo");
+  const [mensaje, setMensaje] = useState('');
+  const [criterioBusqueda, setCriterioBusqueda] = useState('');
+  const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
+  const [ventaConfirmada, setVentaConfirmada] = useState(null);
 
-  // Estado para manejar la forma de pago seleccionada
-  const [formaDePago, setFormaDePago] = useState('Efectivo');
+  // Calcular el total de la venta y el cambio
+  const totalVenta = productosAgregados.reduce((total, p) => {
+    const subtotal = p.precio * p.cantidad;
+    const descuento = subtotal * (p.descuento / 100);
+    return total + (subtotal - descuento);
+  }, 0);
 
-  // Función para agregar un producto a la lista de productos de la venta
-  const agregarProducto = () => {
-    // Calcula el total del producto considerando cantidad y descuento
-    const total = (productoActual.precio * productoActual.cantidad) - productoActual.descuento;
+  const cambio = dineroRecibido - totalVenta;
 
-    // Crea un nuevo producto con el total calculado
-    const nuevoProducto = { ...productoActual, total };
+  const consultarProducto = async () => {
+    if (!criterioBusqueda.trim()) {
+      setMensaje("⚠️ Debes ingresar un criterio de búsqueda válido");
+      return;
+    }
 
-    // Agrega el nuevo producto a la lista de productos
-    setProductosAgregados([...productosAgregados, nuevoProducto]);
+    const criterio = criterioBusqueda.trim();
 
-    // Resetea parcialmente el estado del producto actual
-    setProductoActual({ ...productoActual, cantidad: 1, descuento: 0 });
+    let url = '';
+    if (!isNaN(criterio) && criterio.length <= 6) {
+      url = `http://localhost:8080/productos/${criterio}`;
+    } else if (!isNaN(criterio) && criterio.length > 6) {
+      url = `http://localhost:8080/productos/codigoBarras/${criterio}`;
+    } else {
+      url = `http://localhost:8080/productos/nombre/${criterio}`;
+    }
+    console.log("Consultando URL:", url);
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        }
+      });
+
+      if (!res.ok) throw new Error("Producto no encontrado");
+      const data = await res.json();
+
+      // Si es array (por nombre), actualizar lista; si es uno solo, usar directo
+      if (Array.isArray(data)) {
+        setResultadosBusqueda(data);
+      } else {
+        setProductoActual({
+          ...productoActual,
+          id: data.id,
+          nombre: data.nombre,
+          codigo: data.codigo,
+          precio: data.precio
+        });
+        setMensaje("✅ Producto encontrado");
+      }
+
+    } catch (error) {
+      setMensaje("❌ Producto no encontrado");
+    }
   };
 
-  /*
-  const consultarProducto = (producto) => {
-    // Actualiza el estado del producto actual con los datos del producto consultado
+  const agregarProducto = () => {
+    if (!productoActual.id) {
+      setMensaje("⚠️ Debes buscar un producto válido");
+      return;
+    }
+    setProductosAgregados([...productosAgregados, productoActual]);
     setProductoActual({
-      id: producto.id,
-      nombre: producto.nombre,
-      codigo: producto.codigo,
-      precio: producto.precio,
+      id: '',
+      nombre: '',
+      codigo: '',
+      precio: 0,
       cantidad: 1,
       descuento: 0,
     });
-  }
-  */
-
-
-  // Función para eliminar un producto de la lista de productos de la venta
-  const eliminarProducto = (index) => {
-    const copia = [...productosAgregados]; // Crea una copia de la lista de productos
-    copia.splice(index, 1); // Elimina el producto en el índice especificado
-    setProductosAgregados(copia); // Actualiza el estado con la lista modificada
+    setMensaje("✅ Producto agregado");
   };
 
-  // Calcula el total de la venta sumando los totales de todos los productos
-  const totalVenta = productosAgregados.reduce((acc, p) => acc + p.total, 0);
+  const eliminarProducto = (index) => {
+    const nuevosProductos = productosAgregados.filter((_, i) => i !== index);
+    setProductosAgregados(nuevosProductos);
+  };
 
-  // Calcula el cambio a devolver al cliente
-  const cambio = dineroRecibido - totalVenta;
+  const registrarVenta = async () => {
+    if (productosAgregados.length === 0) {
+      setMensaje("⚠️ Debes agregar al menos un producto");
+      return;
+    }
+
+    if (dineroRecibido < totalVenta) {
+      setMensaje("⚠️ El dinero recibido es insuficiente");
+      return;
+    }
+
+    const detalleVenta = productosAgregados.map(p => ({
+        nombreProducto: p.nombre,
+        cantidad: p.cantidad,
+        precioUnitario: p.precio
+      }));
+
+      try {
+      const venta = {
+        detalles: detalleVenta,
+        formaDePago,
+        totalVenta,
+        descuento: 0,
+        dineroRecibido,
+      };
+
+      const res = await fetch("http://localhost:8080/ventas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(venta),
+      });
+      // Verificar si la respuesta es exitosa
+      if (!res.ok) throw new Error("Error al registrar la venta");
+      // Si la respuesta es exitosa, limpiar el mensaje y estados
+      const ventaRegistrada = await res.json();
+      setVentaConfirmada(ventaRegistrada);
+      setMensaje("✅ Venta registrada con éxito");
+
+      // Limpiar estados
+      setProductosAgregados([]);
+      setDineroRecibido(0);
+      setFormaDePago("Efectivo");
+      setProductoActual({
+        id: '',
+        nombre: '',
+        codigo: '',
+        precio: 0,
+        cantidad: 1,
+        descuento: 0,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      setMensaje("❌ Error al registrar la venta");
+    }
+  };
 
   return (
-    <div className="container mt-2">
-      {/* Título de la página */}
-      <h5 className="text-center mb-2">Registro de Ventas</h5>
-
-      <div className="row">
-        {/* Columna izquierda: Formulario para agregar productos */}
-        <div className="col-md-6">
+    <div className="container mt-4">
+      <h1>Registrar Venta</h1>
+        <div className="row">      
+          <div className="col-md-6">
+          {/* Formulario */}
           <FormularioVenta
             producto={productoActual}
             setProducto={setProductoActual}
@@ -83,22 +176,75 @@ function VentasPage() {
             setDineroRecibido={setDineroRecibido}
             cambio={cambio}
             totalVenta={totalVenta}
+            consultarProducto={consultarProducto}
+            mensaje={mensaje}
+            criterioBusqueda={criterioBusqueda}
+            setCriterioBusqueda={setCriterioBusqueda}
           />
         </div>
 
-        {/* Columna derecha: Tabla para mostrar los productos agregados */}
         <div className="col-md-6">
+          {/* Resultados de búsqueda */}
+          {resultadosBusqueda.length > 0 && (
+            <table className="table table-dark table-striped mt-3">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resultadosBusqueda.map((p) => (
+                  <tr key={p.id}>
+                    {console.log("Producto recibido:", p)}
+                    <td>{p.id}</td>
+                    <td>{p.codigoBarras}</td>
+                    <td>{p.nombreProducto}</td>
+                    <td>${formatearMiles(p.precioVenta)}</td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-info"
+                        onClick={() => {
+                          setProductoActual({
+                            ...productoActual,
+                            id: p.id,
+                            nombre: p.nombreProducto,
+                            codigo: p.codigoBarras,
+                            precio: p.precioVenta
+                          });
+                          setResultadosBusqueda([]);
+                          setMensaje(`📝 Producto seleccionado: ${p.nombre}`);
+                        }}
+                      >
+                        Seleccionar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {/* Tabla productos agregados */}
           <TablaProductosVenta
             productos={productosAgregados}
             eliminarProducto={eliminarProducto}
             formaDePago={formaDePago}
             setFormaDePago={setFormaDePago}
             totalVenta={totalVenta}
+            registrarVenta={registrarVenta}
           />
+          <ResumenVenta venta={ventaConfirmada} />
+          </div>
+          {/* Mensaje de estado */}
+          {mensaje && <div className="text-center mt-3 text-info">{mensaje}</div>}
+          
         </div>
-      </div>
     </div>
   );
 }
 
-export default VentasPage; // Exporta el componente para su uso en otras partes de la aplicación
+export default VentasPage;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-function FormularioEmpleado({ empleado, onChange, onSubmit, onEliminar }) {
+function FormularioEmpleado({ empleado, onChange, onSubmit, onEliminar, onActualizar }) {
   return (
     <div className="text-center mb-4">
       <form onSubmit={onSubmit} className="bg-card-dark shadow-sm p-4 rounded mb-4">
@@ -70,17 +70,19 @@ function FormularioEmpleado({ empleado, onChange, onSubmit, onEliminar }) {
             onChange={onChange}
             className="form-control form-control-dark"
           >
-            <option value="EMPLEADO">VENDEDOR</option>
+            <option value="VENDEDOR">VENDEDOR</option>
             <option value="ALMACENISTA">ALMACENISTA</option>
-            <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+            <option value="ADMIN">ADMIN</option>
           </select>
         </div>
 
-        <button type="submit" className="btn btn-primary w-100">
-          Registrar Empleado + Usuario
+        <button type="submit" className="btn btn-primary">
+          Registrar
         </button>
-      </form>
-    
+        <button type="button" className="btn btn-primary ms-2" onClick={onActualizar}>
+          Actualizar
+        </button>
+      </form>    
   </div>
   );
 }

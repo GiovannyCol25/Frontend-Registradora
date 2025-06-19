@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 function TablaVentas({ ventas, pagina, totalPaginas, onPaginar }) {
   return (
     <div className="bg-card-dark p-3 rounded text-white mb-4">

@@ -18,6 +18,9 @@ function ProductosPage() {
 
   // Estado para manejar mensajes de error o éxito
   const [mensaje, setMensaje] = useState('');
+  // Estado para manejar el criterio de búsqueda y los resultados
+  const [criterioBusqueda, setCriterioBusqueda] = useState('');
+  const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
 
   // Función para agregar un producto a la lista
   const agregarProducto = (e) => {
@@ -25,7 +28,7 @@ function ProductosPage() {
     const { codigoBarras, nombreProducto, precioVenta } = producto;
 
     // Validación: Verifica que todos los campos estén llenos
-    if (!codigoBarras || !nombreProducto || !precioVenta) {
+    if (!producto.codigoBarras || !producto.nombreProducto || !producto.precioVenta) {
       setMensaje('⚠️ Todos los campos son obligatorios');
       return;
     }
@@ -56,21 +59,102 @@ function ProductosPage() {
       return;
     }
 
+    console.log('productos', productos); // Muestra la lista de productos en la consola
+
     try {
       // Realiza una solicitud POST al servidor con la lista de productos
       const res = await fetch('http://localhost:8080/productos', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productos),
+        headers: { 'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+         },
+        body: JSON.stringify(productos), // Envía la lista de productos como cuerpo de la solicitud
       });
 
+      if (!res.ok) {
+        throw new Error('Error al registrar los productos'); // Manejo de errores
+      }
+      
       const data = await res.json(); // Obtiene la respuesta del servidor
       setMensaje('✅ Registro exitoso'); // Muestra un mensaje de éxito
       setProductos([]); // Limpia la lista de productos
       setProductosRegistrados(data); // Actualiza la lista de productos registrados
     } catch (error) {
-      console.error('Error:', error); // Maneja errores en la consola
       setMensaje('❌ Error al registrar los productos'); // Muestra un mensaje de error
+    }
+  };
+
+  const buscarProductos = async () => {
+    if (!criterioBusqueda.trim()) {
+      setMensaje('⚠️ Ingresa un criterio de búsqueda');
+      return;
+    }
+
+    const criterio = criterioBusqueda.trim();
+
+    let url = "";
+    //Busca por ID si es un número entero corto
+    if (!isNaN(criterio) && criterio.length <= 6) {
+      url = `http://localhost:8080/productos/${criterio}`;
+    }
+    //Buscar por código de barras si es un número largo
+    else if (!isNaN(criterio) && criterio.length > 6) {
+      url = `http://localhost:8080/productos/codigo-barras/${criterio}`;
+    }
+    //Buscar por nombre si es una cadena de texto
+    else {
+      url = `http://localhost:8080/productos/nombre/${criterio}`;
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Error al buscar productos');
+
+      const data = await res.json();
+      //Si es un Array de la búsqueda por nombre muestra tabla de selección
+      if (Array.isArray(data)) {
+        setResultadosBusqueda(data);
+        setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
+      }else {
+      setProducto(data); // Actualiza el producto con los datos obtenidos
+      setMensaje(`🔍 Producto encontrado:`);
+      //setResultadosBusqueda(data);
+      //setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
+    }
+    } catch (error) {
+      setMensaje('❌ Error en la búsqueda de productos');
+      console.error(error);
+      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+      setResultadosBusqueda([]); // Limpia los resultados de búsqueda
+    }
+  };
+
+  const actualizarProducto = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/productos/${producto.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(producto),
+      });
+
+      if (!res.ok) throw new Error('Error al actualizar el producto');
+
+      setMensaje('✅ Producto actualizado exitosamente');
+      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+      setResultadosBusqueda([]);
+    } catch (err) {
+      console.error(err);
+      setMensaje('❌ Error al actualizar el producto');
     }
   };
 
@@ -94,6 +178,70 @@ function ProductosPage() {
           onRegistrar={registrarProductos}
           formatearMiles={formatearMiles}
         />
+      )}
+
+      {/* Botón para actualizar producto seleccionado */}
+      {producto.codigoBarras && (
+        <button
+          className="btn btn-warning mt-2 w-100"
+          onClick={actualizarProducto}
+        >
+          Actualizar producto
+        </button>
+      )}
+
+      {/* Mensaje */}
+      {mensaje && <div className="text-center mt-3 text-info">{mensaje}</div>}
+      
+      {/* Formulario de búsqueda */}
+      <div className="mt-3">
+        <input
+          type="text"
+          placeholder="Buscar por ID, nombre o código de barras"
+          className="form-control mb-2"
+          value={criterioBusqueda}
+          onChange={(e) => setCriterioBusqueda(e.target.value)}
+        />
+        <button className="btn btn-secondary w-100" onClick={buscarProductos}>
+          Buscar producto
+        </button>
+      </div>
+
+      {/* Tabla de resultados de búsqueda */}
+      {resultadosBusqueda.length > 0 && (
+        <table className="table table-striped table-hover mt-3">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Código Barras</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultadosBusqueda.map((p) => (
+              <tr key={p.id}>
+                <td>{p.id}</td>
+                <td>{p.nombreProducto}</td>
+                <td>{formatearMiles(p.precioVenta)}</td>
+                <td>{p.codigoBarras}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-info"
+                    onClick={() => {
+                      setProducto(p); // Carga el producto en el formulario
+                      setResultadosBusqueda([]); // Limpia la tabla
+                      setMensaje(`📝 Producto seleccionado: ${p.nombreProducto}`);
+                    }}
+                  >
+                    Seleccionar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
       {/* Mensaje de error o éxito */}

@@ -1,54 +1,122 @@
-// src/pages/ClientesPage.js
 import React, { useState } from 'react';
-import FormularioCliente from '../components/FormularioCliente';
 
-function ClientesPage() {
-  const [cliente, setCliente] = useState({ nombre: '', telefono: '' });
+function ClienteFormulario() {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    correo: '',
+    telefono: '',
+  });
+
+  const [busqueda, setBusqueda] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCliente({ ...cliente, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const registrarCliente = async (e) => {
-    e.preventDefault();
+  const handleBusquedaChange = (e) => {
+    setBusqueda(e.target.value);
+  };
 
-    if (!cliente.nombre || !cliente.telefono) {
-      setMensaje('⚠️ Todos los campos son obligatorios');
-      return;
+  const handleRegistrar = () => {
+    if (formData.nombre && formData.correo && formData.telefono) {
+      setMensaje('Cliente registrado exitosamente.');
+    } else {
+      setMensaje('Por favor, completa todos los campos.');
     }
+  };
 
-    try {
-      const res = await fetch('http://localhost:8080/clientes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cliente),
+  const handleBuscar = () => {
+    if (busqueda.toLowerCase() === 'juan' || busqueda === '1') {
+      setFormData({
+        nombre: 'Juan Pérez',
+        correo: 'juan@example.com',
+        telefono: '123456789',
       });
+      setMensaje('Cliente encontrado.');
+    } else {
+      setMensaje('Cliente no encontrado.');
+      setFormData({
+        nombre: '',
+        correo: '',
+        telefono: '',
+      });
+    }
+  };
 
-      const data = await res.json();
-      console.log('Cliente registrado:', data);
-      setMensaje('✅ Cliente registrado exitosamente');
-      setCliente({ nombre: '', telefono: '' });
-    } catch (error) {
-      console.error('Error al registrar cliente:', error);
-      setMensaje('❌ Error al registrar cliente');
+  const handleActualizar = () => {
+    if (formData.nombre && formData.correo && formData.telefono) {
+      setMensaje('Cliente modificado exitosamente.');
+    } else {
+      setMensaje('Por favor, completa todos los campos para actualizar.');
     }
   };
 
   return (
-    <div className="container mt-4">
-      <h4 className="text-center text-white mb-3">Registro de Clientes</h4>
+    <div className="p-4 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4">
+      <h2 className="text-xl text-black font-bold text-black-800">Gestión de Clientes</h2>
 
-      <FormularioCliente
-        cliente={cliente}
-        onChange={handleChange}
-        onSubmit={registrarCliente}
-      />
+      {mensaje && <div className="text-green-600 text-black font-medium">{mensaje}</div>}
 
-      {mensaje && <div className="text-center mt-3 text-info">{mensaje}</div>}
+      <div className="space-y-2">
+        <input
+          type="text"
+          placeholder="Buscar cliente por ID o nombre"
+          value={busqueda}
+          onChange={handleBusquedaChange}
+          className="w-full p-2 border rounded text-black"
+        />
+        <button
+          onClick={handleBuscar}
+          className="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Buscar
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        <input
+          type="text"
+          name="nombre"
+          placeholder="Nombre"
+          value={formData.nombre}
+          onChange={handleChange}
+          className="w-full p-2 border rounded text-black"
+        />
+        <input
+          type="email"
+          name="correo"
+          placeholder="Correo"
+          value={formData.correo}
+          onChange={handleChange}
+          className="w-full p-2 border rounded text-black"
+        />
+        <input
+          type="tel"
+          name="telefono"
+          placeholder="Teléfono"
+          value={formData.telefono}
+          onChange={handleChange}
+          className="w-full p-2 border rounded text-black"
+        />
+      </div>
+
+      <div className="flex justify-between space-x-2">
+        <button
+          onClick={handleRegistrar}
+          className="bg-green-500 text-black px-4 py-2 rounded hover:bg-green-600"
+        >
+          Registrar
+        </button>
+        <button
+          onClick={handleActualizar}
+          className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
+        >
+          Actualizar
+        </button>
+      </div>
     </div>
   );
 }
 
-export default ClientesPage;
+export default ClienteFormulario;

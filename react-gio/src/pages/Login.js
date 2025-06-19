@@ -22,7 +22,7 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json();
                 sessionStorage.setItem('token', data.jwtToken);
-                localStorage.setItem('rol', data.rol); 
+                localStorage.setItem('rol', data.rol.toUpperCase()); 
                 console.log('Login exitoso');
                 console.log("Token guardado:", data.jwtToken);
                 navigate('/menu');
