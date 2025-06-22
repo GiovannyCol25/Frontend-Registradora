@@ -121,6 +121,7 @@ function VentasPage() {
       }));
 
       try {
+      // Preparar el objeto de venta
       const venta = {
         detalles: detalleVenta,
         formaDePago,

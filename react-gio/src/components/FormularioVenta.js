@@ -39,6 +39,7 @@ function FormularioVenta({
         placeholder="ID, Nombre o Código"
         value={criterioBusqueda}
         onChange={e => setCriterioBusqueda(e.target.value)}
+        autoFocus
         />
       </div>
 
@@ -51,7 +52,10 @@ function FormularioVenta({
         >
           Buscar
           </button>
-        <button type="button" className="btn btn-info w-50 ms-2" onClick={agregarProducto}>Agregar</button>
+        <button 
+        type="button" 
+        className="btn btn-info w-50 ms-2" 
+        onClick={agregarProducto}>Agregar</button>
       </div>
 
       <div className="bg-card-dark mb-3 shadow-sm">

@@ -12,7 +12,7 @@ function FormularioProducto({ producto, setProducto, onAgregar }) {
 
   return (
     // Formulario con estilos y evento de envío
-    <form className="bg-card-dark shadow-sm p-4 rounded mb-4" onSubmit={onAgregar}>
+    <form className="bg-card-dark shadow-sm p-3 rounded mb-4" onSubmit={onAgregar}>
       {/* Campo para el código de barras */}
       <div className="mb-3">
         <label className="form-label text-white">Código de Barras</label>

@@ -1,122 +1,179 @@
 import React, { useState } from 'react';
+import TablaClientes from '../components/TablaClientes';
+import FormularioClientes from '../components/FormularioClientes';
 
-function ClienteFormulario() {
+function ClientesPage() {
+  // Estado para manejar los datos del formulario, búsqueda, mensaje y clientes
   const [formData, setFormData] = useState({
+    id: null,
     nombre: '',
-    correo: '',
-    telefono: '',
+    telefono: ''
   });
-
+  
   const [busqueda, setBusqueda] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [clientes, setClientes] = useState([]);
+
+  const API_URL = 'http://localhost:8080/clientes'; 
+
+  const fetchClientes = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setClientes(data);
+    } catch (error) {
+      console.error('Error al cargar clientes:', error);
+    }
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleBusquedaChange = (e) => {
-    setBusqueda(e.target.value);
-  };
+  // Maneja el cambio en el campo de búsqueda
+  const registrarCliente = async () => {
 
-  const handleRegistrar = () => {
-    if (formData.nombre && formData.correo && formData.telefono) {
-      setMensaje('Cliente registrado exitosamente.');
-    } else {
-      setMensaje('Por favor, completa todos los campos.');
+    const { nombre, telefono } = formData;
+    // Validar que los campos no estén vacíos
+    if (!nombre || !telefono) {
+      setMensaje('⚠️ Todos los campos son obligatorios');
+      return;
     }
-  };
+    // Validar que el teléfono tenga 10 dígitos
+    if (telefono.length !== 10 || isNaN(telefono)) {
+      setMensaje('⚠️ El teléfono debe tener 10 dígitos');
+      return;
+    }
 
-  const handleBuscar = () => {
-    if (busqueda.toLowerCase() === 'juan' || busqueda === '1') {
-      setFormData({
-        nombre: 'Juan Pérez',
-        correo: 'juan@example.com',
-        telefono: '123456789',
+    try {
+      // Preparar los datos del formulario
+      const registro = {
+        nombre: formData.nombre,
+        telefono: formData.telefono
+      };
+
+      // Validar que los campos no estén vacíos
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        // Enviar los datos del formulario al servidor
+        body: JSON.stringify(registro)
       });
-      setMensaje('Cliente encontrado.');
-    } else {
-      setMensaje('Cliente no encontrado.');
-      setFormData({
-        nombre: '',
-        correo: '',
-        telefono: '',
-      });
+      // Verificar si la respuesta es exitosa
+      if (response.ok) {
+        setMensaje('Cliente registrado exitosamente');
+        setFormData({ id: null, nombre: '', telefono: '' });
+        fetchClientes();
+      } else {
+        setMensaje('Error al registrar cliente');
+      }
+      // Limpiar el campo de búsqueda
+    } catch (error) {
+      console.error('Error al registrar cliente:', error);
+      setMensaje('Error al registrar cliente');
     }
   };
 
-  const handleActualizar = () => {
-    if (formData.nombre && formData.correo && formData.telefono) {
-      setMensaje('Cliente modificado exitosamente.');
-    } else {
-      setMensaje('Por favor, completa todos los campos para actualizar.');
+  // Maneja el cambio en el campo de búsqueda
+  const handleBuscar = async () => {
+    try {
+      const response = await fetch(`${API_URL}/id/${busqueda}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
+      // Verificar si la respuesta es exitosa
+      if (response.ok) {
+        const data = await response.json();
+        setClientes(data);
+        setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
+      } else {
+        setMensaje('❌ Error al buscar clientes');
+      }
+    } catch (error) {
+      console.error('Error al buscar clientes:', error);
+      setMensaje('❌ Error al buscar clientes');
     }
   };
+
+  const handleActualizar = async () => {
+    try {
+      const response = await fetch(`${API_URL}/id/${busqueda}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(formData)
+      });
+      // Verificar si la respuesta es exitosa
+      if (response.ok) {
+        setMensaje('Cliente actualizado exitosamente');
+        setFormData({ id: null, nombre: '', telefono: '' });
+        fetchClientes();
+      } else {
+        setMensaje('❌ Error al actualizar cliente');
+      }
+    } catch (error) {
+      console.error('Error al actualizar cliente:', error);
+      setMensaje('❌ Error al actualizar cliente');
+    }
+  };  
+
+  const handleEliminar = async (e) => {
+    try {
+      await fetch(`${API_URL}/id/${e}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
+      setMensaje('Cliente eliminado exitosamente');
+      fetchClientes();
+    } catch (error) {
+      console.error('Error al eliminar cliente:', error);
+      setMensaje('❌ Error al eliminar cliente');
+    }
+  };
+  
+  const handleEditar = (cliente) => {
+    setFormData({
+      id: cliente.id,
+      nombre: cliente.nombre,
+      telefono: cliente.telefono
+    });
+    setBusqueda(cliente.id); // Actualiza el campo de búsqueda con el ID del cliente
+  }
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h2 className="text-xl text-black font-bold text-black-800">Gestión de Clientes</h2>
+    <div className="p-4 max-w-md mx-auto rounded-xl shadow-md space-y-4">
+      <h2 className="text-xl text-withe font-bold text-black-800">Gestión de Clientes</h2>
 
-      {mensaje && <div className="text-green-600 text-black font-medium">{mensaje}</div>}
+      <FormularioClientes
+        formData={formData}
+        onChange={handleChange}
+        onRegistrar={registrarCliente}
+        onBuscar={handleBuscar}
+        onActualizar={handleActualizar}
+        busqueda={busqueda}
+        setBusqueda={setBusqueda}
+        mensaje={mensaje}
+      />
 
-      <div className="space-y-2">
-        <input
-          type="text"
-          placeholder="Buscar cliente por ID o nombre"
-          value={busqueda}
-          onChange={handleBusquedaChange}
-          className="w-full p-2 border rounded text-black"
+      <TablaClientes
+        clientes={clientes}
+        eliminarCliente={handleEliminar}
+        editarCliente={handleEditar}
         />
-        <button
-          onClick={handleBuscar}
-          className="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Buscar
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre"
-          value={formData.nombre}
-          onChange={handleChange}
-          className="w-full p-2 border rounded text-black"
-        />
-        <input
-          type="email"
-          name="correo"
-          placeholder="Correo"
-          value={formData.correo}
-          onChange={handleChange}
-          className="w-full p-2 border rounded text-black"
-        />
-        <input
-          type="tel"
-          name="telefono"
-          placeholder="Teléfono"
-          value={formData.telefono}
-          onChange={handleChange}
-          className="w-full p-2 border rounded text-black"
-        />
-      </div>
-
-      <div className="flex justify-between space-x-2">
-        <button
-          onClick={handleRegistrar}
-          className="bg-green-500 text-black px-4 py-2 rounded hover:bg-green-600"
-        >
-          Registrar
-        </button>
-        <button
-          onClick={handleActualizar}
-          className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600"
-        >
-          Actualizar
-        </button>
-      </div>
     </div>
   );
 }
-
-export default ClienteFormulario;
+export default ClientesPage;
