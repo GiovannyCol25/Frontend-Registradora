@@ -66,8 +66,10 @@ function VentasPage() {
       if (Array.isArray(data)) {
         setResultadosBusqueda(data);
       } else {
+        // Si es un solo producto, actualizar el producto actual
         setProductoActual({
           ...productoActual,
+          // Asignar los datos del producto encontrado
           id: data.id,
           nombre: data.nombre,
           codigo: data.codigo,

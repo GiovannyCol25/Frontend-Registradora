@@ -247,7 +247,9 @@ function EmpleadosPage() {
 
 
           {/* Tabla para mostrar la lista de empleados */}
-          <TablaEmpleados empleados={empleados} onEliminar={eliminarEmpleado} />
+          <TablaEmpleados 
+          empleados={empleados} 
+          onEliminar={eliminarEmpleado} />
           </div>
         </div>
     </div>

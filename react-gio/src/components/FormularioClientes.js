@@ -1,6 +1,6 @@
 import React from "react";
 
-function FormularioClientes({ formData, onChange, onRegistrar, onBuscar, onActualizar, busqueda, setBusqueda, setCliente, mensaje }) {  
+function FormularioClientes({ formData, onChange, onRegistrar, onBuscar, onActualizar, busqueda, setBusqueda, setCliente, mensaje, handleChange }) {  
     return (
         // Componente de formulario para gestionar clientes
         <form className="bg-card-dark shadow-sm p-3 rounded mb-4">
@@ -9,7 +9,7 @@ function FormularioClientes({ formData, onChange, onRegistrar, onBuscar, onActua
                 <label htmlFor="busqueda" className="form-label text-white">Buscar Cliente</label>
                 <input
                     type="text"
-                    placeholder="Buscar cliente por ID"
+                    placeholder="Buscar cliente por ID o nombre"
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
                     className="form-control form-control-dark"
@@ -48,7 +48,7 @@ function FormularioClientes({ formData, onChange, onRegistrar, onBuscar, onActua
                     placeholder="Ingrese el teléfono del cliente"
                     value={formData.telefono}
                     onChange={onChange}
-                    className="form-control form-control-dark"
+                    className="form-control form-control-dark text-white"
                 />
             </div>
 

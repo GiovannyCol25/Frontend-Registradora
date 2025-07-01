@@ -1,0 +1,172 @@
+import React from "react";
+
+function FormularioCompras({
+  producto,
+  setProducto,
+  agregarProducto,
+  criterioBusqueda,
+  setCriterioBusqueda,
+  consultarProducto,
+  setMensaje,
+  mensaje,
+  totalCompra,
+  setTotalCompra,
+  proveedor,
+  setProveedor,
+  criterioProveedor,
+  setCriterioProveedor,
+  consultarProveedor,
+}) {
+
+
+  // Procesa el cambio en los inputs del producto
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // Para campos numéricos, convierte el valor a número
+    const processedValue = (name === 'cantidad' || name === 'descuento') ? Number(value) : value;
+    setProducto({ ...producto, [name]: processedValue });
+  };
+
+  return (
+    <form>
+      {/*Buesqueda de Proveedor*/}
+      <div className="mb-3">
+        <label htmlFor='consultaProveedor' className="form-label">Consulta de Proveedores</label>
+        <input
+          type="text"
+          className="form-control form-control-dark"
+          id="consultaProveedor"
+          name="consultaProveedor"
+          value={criterioProveedor}
+          onChange={e => setCriterioProveedor(e.target.value)}
+          placeholder="ID, Nombre o Código del Proveedor"
+        />
+      </div>
+      <div className="d-flex align-items-end mb-3">
+        <button
+          type="button"
+          name='consultarProveedor'
+          className="btn btn-secondary w-50"
+          onClick={consultarProveedor}
+        >
+          Buscar Proveedor
+        </button>
+        {proveedor && (
+          <div className="mt-2 text-success">
+            ✅ Proveedor seleccionado: <strong>{proveedor.nombre}</strong>
+          </div>
+        )}
+      </div>
+
+      {/*busqueda de Producto*/}
+      <div className="mb-3">
+        <label htmlFor='buscar' className="form-label">Buscar Producto</label>
+        <input 
+          type="text" 
+          className="form-control form-control-dark" 
+          name="buscar" 
+          id="buscar"
+          placeholder="ID, Nombre o Código"
+          value={criterioBusqueda}
+          onChange={e => setCriterioBusqueda(e.target.value)}
+          autoFocus
+        />
+      </div>
+
+      <div className="d-flex align-items-end mb-3">
+        <button 
+          type="button"
+          name='consultar' 
+          className="btn btn-secondary w-50"
+          onClick={consultarProducto}
+        >
+          Buscar
+        </button>
+        <button 
+          type="button" 
+          className="btn btn-info w-50 ms-2" 
+          onClick={agregarProducto}
+        >
+          Agregar
+        </button>
+      </div>
+
+      <div className="col-md-6">
+        <label htmlFor="numeroFactura" className="form-label">Número de Factura</label>
+        <input 
+          type="text"
+          className="form-control form-control-dark"
+          id="numeroFactura"
+          name="numeroFactura"
+          value={producto.numeroFactura || ''}
+          onChange={handleChange}
+          />
+      </div>
+
+        <div className="bg-card-dark mb-3 shadow-sm">
+            <h5 className="text-center">Detalles del Producto</h5>
+            <div className="row mb-3">
+                <div className="col-md-4">
+                    <label htmlFor="nombreProducto" className="form-label">Nombre</label>
+                    <input 
+                        type="text" 
+                        className="form-control form-control-dark" 
+                        id="nombreProducto" 
+                        name="nombreProducto"
+                        value={producto.nombre}
+                        onChange={handleChange}
+                        disabled
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label htmlFor="id" className="form-label">ID Producto</label>
+                    <input 
+                        type="text"
+                        className="form-control form-control-dark"
+                        id="id"
+                        name="id"
+                        value={producto.id || ''}
+                        onChange={handleChange}
+                        disabled
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label htmlFor="codigoBarras" className="form-label">Código</label>
+                    <input 
+                        type="text" 
+                        className="form-control form-control-dark" 
+                        id="codigoBarras" 
+                        name="codigoBarras"
+                        value={producto.codigo || ''}
+                        onChange={handleChange}
+                        disabled
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label htmlFor="precioCompra" className="form-label">Precio</label>
+                    <input 
+                        type="number" 
+                        className="form-control form-control-dark" 
+                        id="precioCompra" 
+                        name="precio"
+                        value={producto.precio ?? ''}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label htmlFor="cantidad" className="form-label">Cantidad</label>
+                    <input 
+                        type="number" 
+                        className="form-control form-control-dark" 
+                        id="cantidad" 
+                        name="cantidad"
+                        value={producto.cantidad || ''}
+                        onChange={handleChange}
+                    />
+                    </div>
+                </div>
+            </div>
+            </form>
+  );
+}
+export default FormularioCompras;

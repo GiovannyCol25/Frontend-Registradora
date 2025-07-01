@@ -9,29 +9,20 @@ function ClientesPage() {
     nombre: '',
     telefono: ''
   });
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   
   const [busqueda, setBusqueda] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [clientes, setClientes] = useState([]);
 
   const API_URL = 'http://localhost:8080/clientes'; 
-
-  const fetchClientes = async () => {
-    try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      setClientes(data);
-    } catch (error) {
-      console.error('Error al cargar clientes:', error);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({      ...prev,
-      [name]: value
-    }));
-  };
 
   // Maneja el cambio en el campo de búsqueda
   const registrarCliente = async () => {
@@ -65,14 +56,18 @@ function ClientesPage() {
         // Enviar los datos del formulario al servidor
         body: JSON.stringify(registro)
       });
+
       // Verificar si la respuesta es exitosa
       if (response.ok) {
+        const data = await response.json();
+        console.log('Cliente registrado:', data);
+        setClientes((prevClientes) => [...prevClientes, data]); // Agregar el nuevo cliente a la lista
         setMensaje('Cliente registrado exitosamente');
         setFormData({ id: null, nombre: '', telefono: '' });
-        fetchClientes();
       } else {
         setMensaje('Error al registrar cliente');
       }
+
       // Limpiar el campo de búsqueda
     } catch (error) {
       console.error('Error al registrar cliente:', error);
@@ -81,31 +76,67 @@ function ClientesPage() {
   };
 
   // Maneja el cambio en el campo de búsqueda
-  const handleBuscar = async () => {
+  const buscarCliente = async () => {
+    if (!busqueda.trim()) {
+      setMensaje('⚠️ Por favor, ingrese un ID para buscar');
+      return;
+    }
+
+    const opcionBusqueda = busqueda.trim();
+    let url = '';
+
+    const esId = !isNaN(opcionBusqueda) && opcionBusqueda.length <= 6;
+    url = esId 
+    ? `${API_URL}/${opcionBusqueda}` 
+    : `${API_URL}/nombre/${opcionBusqueda}`;
+
     try {
-      const response = await fetch(`${API_URL}/id/${busqueda}`, {
+      const response = await fetch(url, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
+
+      if (!response.ok) {
+        setMensaje('No se encontraron resultados');
+        setClientes([]);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Datos obtenidos:', data);
+      console.log('Respuesta del servidor:', response);
       // Verificar si la respuesta es exitosa
-      if (response.ok) {
-        const data = await response.json();
-        setClientes(data);
-        setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
+      
+      if (esId){
+        setFormData({
+          id: data.id,
+          nombre: data.nombre,
+          telefono: data.telefono
+        });
+        setClientes([]);
+        setMensaje(`🔍 Cliente encontrado: ${data.nombre}`);
       } else {
-        setMensaje('❌ Error al buscar clientes');
+        if (Array.isArray(data) && data.length > 0) {
+          setClientes(data);
+          setMensaje(`🔍 Se encontraron ${data.length} clientes con el nombre "${opcionBusqueda}"`);
+        } else {
+          setClientes([]);
+          setMensaje('❌ No se encontraron resultados');
+        }
       }
     } catch (error) {
-      console.error('Error al buscar clientes:', error);
-      setMensaje('❌ Error al buscar clientes');
+      console.error('Error al buscar cliente:', error);
+      setMensaje('❌ Error al buscar cliente');
+      setClientes([]);
     }
   };
 
-  const handleActualizar = async () => {
+  const actualizarCliente = async () => {
     try {
-      const response = await fetch(`${API_URL}/id/${busqueda}`, {
+      const response = await fetch(`${API_URL}/${busqueda}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -115,9 +146,12 @@ function ClientesPage() {
       });
       // Verificar si la respuesta es exitosa
       if (response.ok) {
+        const data = await response.json();
+        console.log('Cliente actualizado:', data);
+        // Actualizar el cliente en la lista de clientes
+        setClientes((prevClientes) => [...prevClientes, data]);
         setMensaje('Cliente actualizado exitosamente');
         setFormData({ id: null, nombre: '', telefono: '' });
-        fetchClientes();
       } else {
         setMensaje('❌ Error al actualizar cliente');
       }
@@ -127,9 +161,9 @@ function ClientesPage() {
     }
   };  
 
-  const handleEliminar = async (e) => {
+  const eliminarCliente = async (e) => {
     try {
-      await fetch(`${API_URL}/id/${e}`, {
+      await fetch(`${API_URL}/${busqueda}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +171,6 @@ function ClientesPage() {
         },
       });
       setMensaje('Cliente eliminado exitosamente');
-      fetchClientes();
     } catch (error) {
       console.error('Error al eliminar cliente:', error);
       setMensaje('❌ Error al eliminar cliente');
@@ -157,22 +190,32 @@ function ClientesPage() {
     <div className="p-4 max-w-md mx-auto rounded-xl shadow-md space-y-4">
       <h2 className="text-xl text-withe font-bold text-black-800">Gestión de Clientes</h2>
 
+      {/* Componente de formulario para registrar o actualizar clientes */}
       <FormularioClientes
         formData={formData}
-        onChange={handleChange}
+        onChange={onChange}
         onRegistrar={registrarCliente}
-        onBuscar={handleBuscar}
-        onActualizar={handleActualizar}
+        onBuscar={buscarCliente}
+        onActualizar={actualizarCliente}
         busqueda={busqueda}
         setBusqueda={setBusqueda}
         mensaje={mensaje}
+        setMensaje={setMensaje}
+        setCliente={setFormData}
       />
 
-      <TablaClientes
+      {/* Tabla para mostrar los clientes registrados */}
+      {clientes.length > 0 && (
+        <TablaClientes
         clientes={clientes}
-        eliminarCliente={handleEliminar}
+        eliminarCliente={eliminarCliente}
         editarCliente={handleEditar}
+        registrarCliente={registrarCliente}
+        onRegistrar={buscarCliente}
         />
+      )}
+      {/* Mensaje de estado */}
+      {mensaje && <div className="text-center text-info mt-3">{mensaje}</div>}
     </div>
   );
 }

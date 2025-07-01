@@ -14,37 +14,32 @@ function TablaClientes({ clientes, eliminarCliente, editarCliente, registrarClie
                 </thead>
                 <tbody>
                     {/* Asegúrate de que 'clientes' es un array y no undefined*/}
-                    {clientes.map((c) => (
-                        <tr key={c.id}>
-                            <td>{c.nombre}</td>
-                            <td>{c.telefono}</td>
-                            <td>
-                                <button
-                                    className="btn btn-primary me-2"
-                                    onClick={() => editarCliente(c.id)}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={() => eliminarCliente(c.id)}
-                                >
-                                    Eliminar
-                                </button>
-                                <button
-                                    className="btn btn-info ms-2"
-                                    onClick={() => registrarCliente(`Detalles del cliente: ${onRegistrar}`)}
-                                >
-                                    Registrar Cliente
-                                </button>
-                            </td>
+                    {Array.isArray(clientes) && clientes.length > 0 ? (
+                        clientes.map((c) => (
+                            <tr key={c.id}>
+                                <td>{c.id}</td>
+                                <td>{c.nombre}</td>
+                                <td>{c.telefono}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-danger"
+                                        onClick={() => eliminarCliente(c.id)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4" className="text-center">No hay clientes registrados.</td>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-
+                    )
+                    }
+                    </tbody>
+                </table>
+            </div>
+        );
 }
 
 export default TablaClientes;

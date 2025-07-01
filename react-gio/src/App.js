@@ -10,6 +10,7 @@ import ClientesPage from './pages/ClientesPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import VentasPage from './pages/VentasPage';
 import ConsultasPage from './pages/ConsultasPage';
+import ComprasPage from './pages/ComprasPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Menu from './pages/Menu';
 import { isAuthenticated } from './utils/auth';
@@ -68,6 +69,13 @@ function App() {
             <Layout><ConsultasPage /></Layout>
           </ProtectedRoute>
         } />
+
+        <Route path="/compras" element={
+          <ProtectedRoute rolesPermitidos={['ADMINISTRADOR', 'ALMACENISTA']}>
+            <Layout><ComprasPage /></Layout>
+          </ProtectedRoute>
+        } />
+
 
         {/* Página de 404 si no encuentra ruta */}
         <Route path="*" element={<Layout><h2>Página no encontrada</h2></Layout>} />

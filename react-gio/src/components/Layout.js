@@ -3,7 +3,6 @@
 import { Link } from 'react-router-dom';
 import { getRol, logout, getUsuario } from '../utils/auth';
 
-const usuario = getUsuario();
 
 function Layout({ children }) {
   const rol = getRol();
@@ -45,6 +44,7 @@ function Layout({ children }) {
                 <li className="nav-item"><Link className="nav-link" to="/consultas">Consultas</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/clientes">Clientes</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/proveedores">Proveedores</Link></li>
+                <li className="nav-item"><Link className="nav-link" to="/compras">Compras</Link></li>
               </>
             )}
 
@@ -53,6 +53,7 @@ function Layout({ children }) {
                 <li className="nav-item"><Link className="nav-link" to="/productos">Productos</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/consultas">Consultas</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/proveedores">Proveedores</Link></li>
+                <li className="nav-item"><Link className="nav-link" to="/compras">Compras</Link></li>
               </>
             )}
 
