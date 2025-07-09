@@ -12,6 +12,10 @@ function FormularioVenta({
   criterioBusqueda,
   setCriterioBusqueda,
   consultarProducto,
+  buscarCliente,
+  setClienteBuscado,
+  clienteBuscado,
+  cliente,
   mensaje,
   totalVenta
  }) {
@@ -29,6 +33,31 @@ function FormularioVenta({
 
   return (
     <form>
+      {/*busqueda de cliente*/}
+      <div className="mb-3">
+        <label htmlFor="buscarCliente" className="form-label">Consulta de Clientes</label>
+        <input 
+          type="text"
+          className="form-control form-control-dark"
+          id="buscarCliente"
+          name="buscarCliente"
+          value={clienteBuscado}
+          onChange={e => setClienteBuscado(e.target.value)}
+          placeholder="Ingrese ID Nombre del Cliente"
+        />
+      </div>
+      <div className="d-flex align-items-end mb-3">
+        <button
+          type="button"
+          name='buscarCliente'
+          className="btn btn-secondary w-50"
+          onClick={buscarCliente}
+        >
+          Buscar Cliente
+        </button>
+        
+      </div>
+
       <div className="mb-3">
         <label htmlFor='buscar' className="form-label">Buscar Producto</label>
         <input 

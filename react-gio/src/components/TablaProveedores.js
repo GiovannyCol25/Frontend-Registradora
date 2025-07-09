@@ -1,6 +1,11 @@
 import React from "react";
 
-function TablaProveedores({ proveedores, eliminarProveedor}){
+function TablaProveedores({ proveedores, eliminarProveedor, enviarEditar, modo = "edicion" }){
+
+    if (!proveedores || proveedores.length === 0) {
+        return null; // No renderiza nada si no hay resultados
+    }
+
     return (
         <div className="bg-card-dark shadow-sm p-3 rounded">
             <table className="table table-dark table-striped mt-3">
@@ -22,12 +27,20 @@ function TablaProveedores({ proveedores, eliminarProveedor}){
                                 <td>{p.nit}</td>
                                 <td>{p.telefono}</td>
                                 <td>
+                                    <button 
+                                        className="btn btn-primary ms-2"
+                                        onClick={() => enviarEditar(p)}
+                                        >
+                                            {modo === "compra" ? "Seleccionar" : "Editar"}
+                                    </button>
+                                    {modo === "edicion" && (
                                     <button
-                                    className="btn btn-danger"
-                                    onClick={() => eliminarProveedor(p.id)}
+                                        className="btn btn-danger"
+                                        onClick={() => eliminarProveedor(p.id)}
                                     >
                                         Eliminar
                                     </button>
+                                    )}
                                 </td>
                             </tr>
                         ))

@@ -3,6 +3,8 @@ import TablaCompras from "../components/TablaCompras";
 import FormularioCompras from "../components/FormularioCompras";
 import ResumenCompra from "../components/ResumenCompra";
 import { formatearMiles } from "../utils/formato";
+import TablaProveedores from "../components/TablaProveedores";
+import { parseJwt } from "../utils/jwt";
 
 function ComprasPage() {
     const [producto, setProducto] = React.useState({
@@ -19,23 +21,48 @@ function ComprasPage() {
     //const [productos, setProductos] = React.useState([]);
     const [resultadosBusqueda, setResultadosBusqueda] = React.useState([]);
     const [productosAgregados, setProductosAgregados] = React.useState([]);
+    React.useEffect(() => {
+      const total = productosAgregados.reduce((acum, prod) => {
+        return acum + (prod.precioCompra * prod.cantidad);
+      }, 0);
+      setTotalCompra(total);
+    }, [productosAgregados]);
     const [compraConfirmada, setCompraConfirmada] = React.useState(null);
-    const [criterioProveedor, setCriterioProveedor] = React.useState('')
-    const [proveedor, setProveedor] = React.useState(null)
+    const [criterioProveedor, setCriterioProveedor] = React.useState('');
+    const [proveedor, setProveedor] = React.useState(null);
+    const [resultadosProveedor, setResultadosProveedor] = React.useState([]);
+    const [numeroFactura, setNumeroFactura] = React.useState(''); 
+
+    React.useEffect(() => {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const payload = parseJwt(token);
+        if (payload?.empleadoId) {
+          sessionStorage.setItem("empleadoId", payload.empleadoId);
+        }
+      }
+    }, []);
  
+    const handleEnviar = (proveedor) => {
+        setProveedor({
+            id: proveedor.id,
+            rezonSocial: proveedor.razonSocial || '',
+            nit: proveedor.nit || '',
+            telefono: parseInt(proveedor.telefono) || ''
+        });
+        setResultadosProveedor([proveedor]);
+        setMensaje(`✅ Proveedor seleccionado: ${proveedor.razonSocial}`);
+    };
+
     const consultarProveedor = async () => {
         if (!criterioProveedor.trim()) {
             setMensaje("⚠️ Debes ingresar un criterio de búsqueda válido");
             return;
         }
         const criterio = criterioProveedor.trim();
-        let url = '';
-        if (!isNaN(criterio)) {
-            url = `http://localhost:8080/proveedores/${criterio}`;
-        } else {
-            url = `http://localhost:8080/proveedores/nombre/${criterio}`;
-        }
-        console.log("Consultando URL:", url);
+        let url = isNaN(criterio)
+        ? `http://localhost:8080/proveedores/nombre/${criterio}`
+        : `http://localhost:8080/proveedores/${criterio}`;
         try {
             const res = await fetch(url, {
                 headers: {
@@ -45,29 +72,23 @@ function ComprasPage() {
             });
             if (res.ok) {
                 const data = await res.json();
-                const proveedorSeleccionado = Array.isArray(data) ? data[0] : data;
+                const lista = Array.isArray(data) ? data : [data];
 
-                if (proveedorSeleccionado) {
-                    setProveedor({
-                        id: proveedorSeleccionado.id,
-                        nombre: proveedorSeleccionado.nombre,
-                        nit: proveedorSeleccionado.nit,
-                        responsable: proveedorSeleccionado.responsable,
-                        telefono: proveedorSeleccionado.telefono,
-                    });
-                    setMensaje(`✅ Proveedor encontrado: ${proveedorSeleccionado.nombre}`);
+                if (lista.length > 0) {
+                    setResultadosProveedor(lista);// Guarda resultados
+                    setMensaje(`✅ Se encontraron ${lista.length} proveedor(es)`);
                 } else {
-                    setMensaje("❌ Proveedor no encontrado");
-                    setProveedor(null);
+                    setMensaje("❌ No se encontró ningún proveedor");
+                    setResultadosProveedor([]);
                 }
             } else {
                 setMensaje("❌ Error al consultar el proveedor");
-                setProveedor(null);
+            setResultadosProveedor([]);
             }
         } catch (error) {
-            console.error("Error al consultar el proveedor:", error);
+            //console.error("Error al consultar el proveedor:", error);
             setMensaje("❌ Error al consultar el proveedor");
-            setProveedor(null);
+            setResultadosProveedor([]);
         }
     };
     
@@ -87,7 +108,7 @@ function ComprasPage() {
         } else {
             url = `http://localhost:8080/productos/nombre/${criterio}`;
         }
-        console.log("Consultando URL:", url);
+        //console.log("Consultando URL:", url);
 
         try {
             const res = await fetch(url, {
@@ -98,10 +119,10 @@ function ComprasPage() {
             });
 
             if (res.ok) {
-                console.log("Respuesta del servidor:", res);
+                //console.log("Respuesta del servidor:", res);
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    console.log("Datos de productos encontrados:", data);
+                    //console.log("Datos de productos encontrados:", data);
                     setResultadosBusqueda(data);
                 } else {
                     setProducto({
@@ -117,7 +138,7 @@ function ComprasPage() {
     } 
 
             } catch (error) {
-            console.error("Error al consultar el producto:", error);
+            //console.error("Error al consultar el producto:", error);
             setMensaje("❌ Producto no encontrado");
         }
     };
@@ -135,7 +156,7 @@ function ComprasPage() {
             precioCompra: 0,
             cantidad: 1,
         });
-        console.log("Producto agregado:", producto);
+        //console.log("Producto agregado:", producto);
         setMensaje("✅ Producto agregado");
     };
 
@@ -150,19 +171,40 @@ function ComprasPage() {
             return;
         }
 
-        const detallesCompra = productosAgregados.map((p) => ({
+        if (!proveedor || !proveedor.id) {
+            setMensaje("⚠️ Debes seleccionar un proveedor");
+            return;
+        }
+
+        const empleadoId = sessionStorage.getItem('empleadoId');
+        if (!empleadoId) {
+            setMensaje("⚠️ No se pudo obtener el empleado autenticado");
+            console.log("validar session", empleadoId)
+            return;
+        }
+
+        /*const detallesCompra = productosAgregados.map((p) => ({
             productoId: p.id,
             cantidad: p.cantidad,
-            precioUnitario: p.precio,
-        }));
+            precioUnitario: p.precioCompra,
+        }));*/
 
         try {
             // Preparar el objeto de compra
             const compra = {
-                detallesCompra,
-                totalCompra: totalCompra,
-                fechaCompra: new Date().toISOString(),
+                proveedorId: proveedor.id,
+                empleadoId: Number(sessionStorage.getItem("empleadoId")), 
+                numeroFactura: numeroFactura,
+                totalCompra,
+                detalleCompraDtoList: productosAgregados.map(p => ({
+                    productoId: p.id,
+                    cantidad: p.cantidad,
+                    precioUnitario: p.precioUnitario
+                }))
             };
+
+            console.log("✔️ Objeto enviado al backend:", compra);
+
             const response = await fetch('http://localhost:8080/compras', {
                 method: 'POST',
                 headers: {
@@ -171,10 +213,12 @@ function ComprasPage() {
                 },
                 body: JSON.stringify(compra),
             });
+            console.log('validar response de compra', compra);
 
             if (!response.ok) {
                 throw new Error("Error al registrar la compra");
             }    
+            console.log('validar response de compra', compra);
 
             const compraRegistrada = await response.json();
             setCompraConfirmada(compraRegistrada);
@@ -190,6 +234,7 @@ function ComprasPage() {
                 precioCompra: 0,
                 cantidad: 1,
             });
+            setNumeroFactura('');
         } catch (error) {
             console.error("Error al registrar la compra:", error);
             setMensaje("❌ Error al registrar la compra");
@@ -213,7 +258,6 @@ function ComprasPage() {
         totalCompra={totalCompra}
         setTotalCompra={setTotalCompra}
         agregarProducto={agregarProducto}
-        eliminarProducto={eliminarProducto}
         registrarCompra={registrarCompra}
         proveedor={proveedor}
         setProveedor={setProveedor}
@@ -221,6 +265,8 @@ function ComprasPage() {
         setCriterioProveedor={setCriterioProveedor}
         consultarProveedor={consultarProveedor}
         compra={productosAgregados}
+        numeroFactura={numeroFactura}
+        setNumeroFactura={setNumeroFactura}
         />
         </div>
         <div className="col-md-6">
@@ -249,12 +295,12 @@ function ComprasPage() {
                                             onClick={() => {
                                                 setProducto({
                                                     id: p.id,
-                                                    nombre: p.nombreProducto,
-                                                    codigo: p.codigoBarras,
-                                                    precio: p.precioCompra,
+                                                    nombreProducto: p.nombreProducto,
+                                                    codigoBarras: p.codigoBarras,
+                                                    precioCompra: p.precioCompra,
                                                     cantidad: 1
                                                 });
-                                                setResultadosBusqueda([]);
+                                                // setResultadosBusqueda([]);
                                                 setMensaje(`📝 Producto seleccionado: ${p.nombreProducto}`);
                                             }}
                                         >
@@ -269,19 +315,36 @@ function ComprasPage() {
 
             {/*Tabla de resultados de búsqueda */}
             <div className="bg-card-dark p-3 rounded text-white mb-4">
-        <TablaCompras
-            eliminarCompra={eliminarProducto}
-            compras={productosAgregados}
-            totalCompra={totalCompra}
-            setTotalCompra={setTotalCompra}
-            eliminarProducto={eliminarProducto}
-            registrarCompra={registrarCompra}
-            />
-            <ResumenCompra compras={compraConfirmada} />
-            
+            <TablaCompras
+                titulo="🛒 Productos a comprar"
+                eliminarCompra={eliminarProducto}
+                compras={productosAgregados}
+                totalCompra={totalCompra}
+                setTotalCompra={setTotalCompra}
+                eliminarProducto={eliminarProducto}
+                registrarCompra={registrarCompra}
+                />
+                <ResumenCompra compras={compraConfirmada} />
+                <button
+                    className="btn btn-success w-100 mt-3"
+                    onClick={registrarCompra}
+                    >
+                    Registrar Compra
+                </button>
+
             </div>
             {/*Mensaje de estado */}
             {mensaje && <div className="text-center mt-3 text-info">{mensaje}</div>}
+
+            <div>
+                {/*Tabla para mostrar proveedor*/}
+                <TablaProveedores
+                onClick={consultarProveedor}
+                proveedores={resultadosProveedor}
+                enviarEditar={handleEnviar}
+                modo="compra" // prop para manejo del botón seleccionar de la tabla
+                />
+            </div>
         </div>
     </div>
     </div>

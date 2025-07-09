@@ -21,6 +21,12 @@ function TablaClientes({ clientes, eliminarCliente, editarCliente, registrarClie
                                 <td>{c.nombre}</td>
                                 <td>{c.telefono}</td>
                                 <td>
+                                    <button 
+                                        className="btn btn-primary ms-2"
+                                        onClick={() => editarCliente(c)}
+                                        >
+                                            Seleccionar
+                                    </button>
                                     <button
                                         className="btn btn-danger"
                                         onClick={() => eliminarCliente(c.id)}

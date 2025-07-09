@@ -3,6 +3,7 @@ import FormularioVenta from "../components/FormularioVenta";
 import TablaProductosVenta from "../components/TablaProductosVenta";
 import { formatearMiles } from "../utils/formato";
 import ResumenVenta from "../components/ResumenVenta";
+import TablaClientes from "../components/TablaClientes";
 
 function VentasPage() {
   const [productoActual, setProductoActual] = useState({
@@ -23,6 +24,9 @@ function VentasPage() {
   const [criterioBusqueda, setCriterioBusqueda] = useState('');
   const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
   const [ventaConfirmada, setVentaConfirmada] = useState(null);
+  const [clienteBuscado, setClienteBuscado] = React.useState('');
+  const [resultadosCliente, setResultadosCliente] = React.useState([]);
+  const [cliente, setCliente] = React.useState(null);
 
   // Calcular el total de la venta y el cambio
   const totalVenta = productosAgregados.reduce((total, p) => {
@@ -105,6 +109,57 @@ function VentasPage() {
     setProductosAgregados(nuevosProductos);
   };
 
+  const handleEditar = (cliente) => {
+        setCliente({
+            id: cliente.id,
+            nombre: cliente.nombre || '',
+            telefono: String(cliente.telefono) || ''
+        })
+        setResultadosCliente([cliente]);
+        setMensaje(`✅ Cliente seleccionado: ${cliente.nombre}`);
+    }
+
+    const buscarCliente = async () => {
+        if(!clienteBuscado.trim()){
+            setMensaje('⚠️ Por favor, ingrese un ID o nombre para buscar');
+            return;
+        }
+        const opcionCliente = clienteBuscado.trim();
+        let url = isNaN(opcionCliente)
+            ? `http://localhost:8080/clientes/nombre/${opcionCliente}`
+            : `http://localhost:8080/clientes/${opcionCliente}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
+
+            if (response.ok) {
+            const data = await response.json();
+            const listaClientes = Array.isArray(data) ? data : [data];
+
+            if (listaClientes.length > 0){
+                setResultadosCliente(listaClientes);
+                setMensaje(`✅ Se encontraron ${listaClientes.length} clientes`);
+            } else {
+                setMensaje("No se encontro ningún cliente");
+                setResultadosCliente([]);
+            }
+        } else {
+            setMensaje("❌ Error al consultar el clientes");
+            setResultadosCliente([]);
+        }
+    } catch (error) {
+        console.error("Error al consultar el proveedor:", error);
+        setMensaje("❌ Error al consultar el proveedor");
+        setResultadosCliente([]);
+    }
+  };
+
   const registrarVenta = async () => {
     if (productosAgregados.length === 0) {
       setMensaje("⚠️ Debes agregar al menos un producto");
@@ -183,6 +238,10 @@ function VentasPage() {
             mensaje={mensaje}
             criterioBusqueda={criterioBusqueda}
             setCriterioBusqueda={setCriterioBusqueda}
+            clienteBuscado={clienteBuscado}
+            setClienteBuscado={setClienteBuscado}
+            cliente={cliente}
+            buscarCliente={buscarCliente}
           />
         </div>
 
@@ -242,6 +301,17 @@ function VentasPage() {
           />
           <ResumenVenta venta={ventaConfirmada} />
           </div>
+          <div>
+                {/*Tabla para mostrar cliente*/}
+                <TablaClientes
+                clienteBuscado={clienteBuscado}
+                setClienteBuscado={setClienteBuscado}
+                clientes={resultadosCliente}
+                cliente={cliente}
+                editarCliente={handleEditar}
+                buscarCliente={buscarCliente}
+                />
+            </div>
           {/* Mensaje de estado */}
           {mensaje && <div className="text-center mt-3 text-info">{mensaje}</div>}
           

@@ -15,7 +15,7 @@ function ProveedoresPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "telefono" ? parseInt(value) || 0 : value,
     }));
   }
 
@@ -56,6 +56,13 @@ function ProveedoresPage() {
         const data = await response.json();
         console.log("Cliente registrado:", data);
         setMensaje('Proveedor registrado exitosamente');
+        setProveedores(prev => [...prev, data]);
+        setFormData({
+          id: null,
+          razonSocial: '',
+          nit: '',
+          telefono: '',
+        });
       }else{
         setMensaje('Error al registrar proveedor');
       }
@@ -71,8 +78,15 @@ function ProveedoresPage() {
       return;
     }
 
-/*    const proveedorBuscado = busquedaProveedor.trim(); */
+    const proveedorBuscado = busquedaProveedor.trim(); 
     let url = ''; 
+
+    if(!isNaN(proveedorBuscado)){
+      //Buscar por ID
+      url = `http://localhost:8080/proveedores/${proveedorBuscado}`;
+    } else {
+      url = `http://localhost:8080/proveedores/nombre/${proveedorBuscado}`;
+    }
 
     try{
       const response = await fetch(url, {
@@ -82,6 +96,7 @@ function ProveedoresPage() {
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
+      console.log("validar response", response);
 
       if(!response.ok){
         setMensaje('No se encontraron resultados');
@@ -90,9 +105,62 @@ function ProveedoresPage() {
       }
 
       const data = await response.json();
-      setProveedores(data)
+
+      if (Array.isArray(data)){
+        setProveedores(data);
+      } else {
+        setProveedores([data]); //convierte en Array un objeto
+      }
+
+      setMensaje(`✅ Se encontraron ${Array.isArray(data) ? data.length : 1} proveedor(es)`)
+      console.log(data);
     } catch(error){
       setMensaje("❌ No se encontró el proveedor");
+    }
+  };
+
+  // Método para que el botón Agregar envíe los datos 
+  // al formulario y limpia la tabla
+  const handleEnviar = (proveedor) => {
+    setFormData({
+      id: proveedor.id,
+      razonSocial: proveedor.razonSocial || '',
+      nit: proveedor.nit || '',
+      telefono: parseInt(proveedor.telefono) || ''
+    });
+    setBusquedaProveedor(proveedor.id);
+  };
+
+  const actualizarProveedor = async () => {
+    try {
+      console.log("📤 Datos enviados a backend (actualizarProveedor):", formData);
+      const response = await fetch(`${API_URL}/${formData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(formData)
+      });
+      if(response.ok){
+        const data = await response.json();
+        console.log("validar envío de datos al backend", data)
+        setMensaje('Proveedor actualizado exitosamente');
+        setProveedores(prev =>
+          prev.map(p => (p.id === data.id ? data : p))
+        );
+
+        setFormData({
+          id: null,
+          razonSocial: '',
+          nit: '',
+          telefono: '',
+        });
+      }else{
+        setMensaje('Error al actualizar proveedor');
+      } 
+    }catch(error){
+      setMensaje('Error al actualizar proveedor');
     }
   };
 
@@ -109,6 +177,7 @@ function ProveedoresPage() {
         onBuscar={consultarProveedor}
         busquedaProveedor={busquedaProveedor}
         setBusquedaProveedor={setBusquedaProveedor}
+        onActualizar={actualizarProveedor}
         //setProveedores{setFormData}
       />
 
@@ -116,6 +185,8 @@ function ProveedoresPage() {
       {proveedores.length > 0 && (
         <TablaProveedores
         proveedores={proveedores}
+        enviarEditar={handleEnviar}
+        modo="edición" // prop para manejo del botón seleccionar de la tabla
         />
       )}
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-function FormularioProveedor({formData, onChange, mensaje, onBuscar, setBusquedaProveedor, busquedaProveedor, onActualizar, onRegistrar}) {
+function FormularioProveedor({formData, onChange, mensaje, onBuscar, setBusquedaProveedor, onAgregar, busquedaProveedor, onActualizar, onRegistrar}) {
     return (
         // Componente de formulario para gestionar proveedores
         <form className="bg-card-dark shadow-sm p-3 rounded mb-4">
@@ -33,7 +33,7 @@ function FormularioProveedor({formData, onChange, mensaje, onBuscar, setBusqueda
                     name="razonSocial"
                     id="razonSocial"
                     placeholder="Ingrese la Razón Social del proveedor"
-                    value={formData.razonSocial}
+                    value={formData.razonSocial || ''}
                     onChange={onChange}
                     className="form-control form-control-dark text-blue"
                     autoFocus
@@ -48,27 +48,28 @@ function FormularioProveedor({formData, onChange, mensaje, onBuscar, setBusqueda
                     name="nit"
                     id="nit"
                     placeholder="Ingrese el NIT del proveedor"
-                    value={formData.nit}
+                    value={formData.nit || ''}
                     onChange={onChange}
                     className="form-control form-control-dark text-blue"
                 />
             </div>
             {/*Campo para el teléfono del proveedor*/}
             <div className="mb-3">
-                <label htmlFor="telefono" className="form-label text-white">Teléfono</label>
+                <label htmlFor="telefono" className="form-label text-blue">Teléfono</label>
                 <input
-                    type="tel"
+                    type="Number"
                     name="telefono"
                     id="telefono"
                     placeholder="Ingrese el teléfono del proveedor"
-                    value={formData.telefono}
+                    value={formData.telefono || ''}
                     onChange={onChange}
                     className="form-control form-control-dark text-blue"
                 />
             </div>
             <div className="mb-3">
-                <button type="button" className="btn btn-success" onClick={onRegistrar}>Registrar</button>
+                <button type="button" className="btn btn-success" onClick={onAgregar}>Agregar</button>
                 <button type="button" className="btn btn-info ms-2" onClick={onActualizar}>Actualizar</button>
+                <button type="button" className="btn btn-primary ms-2" onClick={onRegistrar}>Registrar</button>
             </div>
             {mensaje && <div className="text-blue-600 font-medium">{mensaje}</div>}
         </form>

@@ -10,6 +10,10 @@ function ClientesPage() {
     telefono: ''
   });
 
+  // Lista temporal de clientes agregados
+  const [clientesAgregados, setClientesAgregados] = useState([]);
+
+  // Maneja cambios en el formulario
   const onChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -78,7 +82,7 @@ function ClientesPage() {
   // Maneja el cambio en el campo de búsqueda
   const buscarCliente = async () => {
     if (!busqueda.trim()) {
-      setMensaje('⚠️ Por favor, ingrese un ID para buscar');
+      setMensaje('⚠️ Por favor, ingrese un ID o nombre para buscar');
       return;
     }
 
@@ -100,7 +104,7 @@ function ClientesPage() {
       });
 
       if (!response.ok) {
-        setMensaje('No se encontraron resultados');
+        setMensaje('No se encontraron clientes');
         setClientes([]);
         return;
       }
@@ -181,11 +185,43 @@ function ClientesPage() {
     setFormData({
       id: cliente.id,
       nombre: cliente.nombre,
-      telefono: cliente.telefono
+      telefono: String(cliente.telefono)
     });
     setBusqueda(cliente.id); // Actualiza el campo de búsqueda con el ID del cliente
+    setClientes([]);  
   }
 
+  // Agrega cliente a la lista temporal
+  const agregarCliente = () => {
+    if (!formData.nombre || !formData.telefono) {
+      setMensaje('⚠️ Todos los campos son obligatorios');
+      return;
+    }
+    if (formData.telefono.length !== 10 || isNaN(formData.telefono)) {
+      setMensaje('⚠️ El teléfono debe tener 10 dígitos');
+      return;
+    }
+    setClientesAgregados(prev => [
+      ...prev,
+      { ...formData, id: Date.now() } // id temporal
+    ]);
+    setFormData({ id: null, nombre: '', telefono: '' });
+    setMensaje('Cliente agregado a la lista temporal');
+  };
+
+  // Envía todos los clientes agregados al backend
+  const registrarClientes = async () => {
+    try {
+      // Aquí puedes hacer un fetch para enviar todos los clientes agregados
+      // Ejemplo:
+      // await fetch(API_URL, { method: 'POST', body: JSON.stringify(clientesAgregados) });
+      setMensaje('Clientes registrados exitosamente');
+      setClientesAgregados([]);
+    } catch (error) {
+      setMensaje('Error al registrar clientes');
+    }
+  };
+  
   return (
     <div className="p-4 max-w-md mx-auto rounded-xl shadow-md space-y-4">
       <h2 className="text-xl text-withe font-bold text-black-800">Gestión de Clientes</h2>
@@ -201,7 +237,7 @@ function ClientesPage() {
         setBusqueda={setBusqueda}
         mensaje={mensaje}
         setMensaje={setMensaje}
-        setCliente={setFormData}
+        onAgregar={agregarCliente}
       />
 
       {/* Tabla para mostrar los clientes registrados */}
@@ -213,6 +249,23 @@ function ClientesPage() {
         registrarCliente={registrarCliente}
         onRegistrar={buscarCliente}
         />
+      )}
+
+      {/* Tabla temporal de clientes agregados */}
+      {/*Bloque para el renderizado */}
+      {clientesAgregados.length > 0 && (
+        <TablaClientes
+          clientes={clientesAgregados}
+          eliminarCliente={eliminarCliente}
+          editarCliente={handleEditar}
+        />
+      )}
+
+      {/* Botón para registrar todos los clientes agregados */}
+      {clientesAgregados.length > 0 && (
+        <button className="btn btn-success w-100 mt-3" onClick={registrarClientes}>
+          Registrar todos los clientes
+        </button>
       )}
       {/* Mensaje de estado */}
       {mensaje && <div className="text-center text-info mt-3">{mensaje}</div>}

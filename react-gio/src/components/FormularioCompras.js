@@ -1,4 +1,5 @@
 import React from "react";
+import { formatearMiles } from "../utils/formato";
 
 function FormularioCompras({
   producto,
@@ -16,6 +17,8 @@ function FormularioCompras({
   criterioProveedor,
   setCriterioProveedor,
   consultarProveedor,
+  numeroFactura,
+  setNumeroFactura
 }) {
 
 
@@ -23,7 +26,7 @@ function FormularioCompras({
   const handleChange = (e) => {
     const { name, value } = e.target;
     // Para campos numéricos, convierte el valor a número
-    const processedValue = (name === 'cantidad' || name === 'descuento') ? Number(value) : value;
+    const processedValue = ['cantidad', 'precioCompra'].includes(name) ? Number(value) : value;
     setProducto({ ...producto, [name]: processedValue });
   };
 
@@ -51,11 +54,6 @@ function FormularioCompras({
         >
           Buscar Proveedor
         </button>
-        {proveedor && (
-          <div className="mt-2 text-success">
-            ✅ Proveedor seleccionado: <strong>{proveedor.nombre}</strong>
-          </div>
-        )}
       </div>
 
       {/*busqueda de Producto*/}
@@ -98,8 +96,8 @@ function FormularioCompras({
           className="form-control form-control-dark"
           id="numeroFactura"
           name="numeroFactura"
-          value={producto.numeroFactura || ''}
-          onChange={handleChange}
+          value={numeroFactura}
+          onChange={(e) => setNumeroFactura(e.target.value)}
           />
       </div>
 
@@ -113,7 +111,7 @@ function FormularioCompras({
                         className="form-control form-control-dark" 
                         id="nombreProducto" 
                         name="nombreProducto"
-                        value={producto.nombre}
+                        value={producto.nombreProducto}
                         onChange={handleChange}
                         disabled
                     />
@@ -137,7 +135,7 @@ function FormularioCompras({
                         className="form-control form-control-dark" 
                         id="codigoBarras" 
                         name="codigoBarras"
-                        value={producto.codigo || ''}
+                        value={producto.codigoBarras || ''}
                         onChange={handleChange}
                         disabled
                     />
@@ -148,8 +146,8 @@ function FormularioCompras({
                         type="number" 
                         className="form-control form-control-dark" 
                         id="precioCompra" 
-                        name="precio"
-                        value={producto.precio ?? ''}
+                        name="precioCompra"
+                        value={producto.precioCompra ?? ''}
                         onChange={handleChange}
                     />
                 </div>
@@ -164,6 +162,18 @@ function FormularioCompras({
                         onChange={handleChange}
                     />
                     </div>
+                    <div className="col-md-6 mt-3">
+                      <label htmlFor="totalCompra" className="form-label">Total de la Compra</label>
+                      <input 
+                        type="text" 
+                        id="totalCompra" 
+                        name="totalCompra"
+                        className="form-control form-control-dark" 
+                        value={`$ ${formatearMiles(totalCompra)}`} 
+                        readOnly 
+                      />
+                    </div>
+
                 </div>
             </div>
             </form>
