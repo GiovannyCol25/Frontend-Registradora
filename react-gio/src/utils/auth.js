@@ -1,3 +1,4 @@
+
 // src/utils/auth.js
 
 // Verifica si el usuario está autenticado comprobando si existe un token en el sessionStorage

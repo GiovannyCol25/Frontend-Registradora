@@ -4,7 +4,6 @@ import FormularioCompras from "../components/FormularioCompras";
 import ResumenCompra from "../components/ResumenCompra";
 import { formatearMiles } from "../utils/formato";
 import TablaProveedores from "../components/TablaProveedores";
-import { parseJwt } from "../utils/jwt";
 
 function ComprasPage() {
     const [producto, setProducto] = React.useState({
@@ -31,17 +30,7 @@ function ComprasPage() {
     const [criterioProveedor, setCriterioProveedor] = React.useState('');
     const [proveedor, setProveedor] = React.useState(null);
     const [resultadosProveedor, setResultadosProveedor] = React.useState([]);
-    const [numeroFactura, setNumeroFactura] = React.useState(''); 
-
-    React.useEffect(() => {
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const payload = parseJwt(token);
-        if (payload?.empleadoId) {
-          sessionStorage.setItem("empleadoId", payload.empleadoId);
-        }
-      }
-    }, []);
+    const [numeroFactura, setNumeroFactura] = React.useState('');
  
     const handleEnviar = (proveedor) => {
         setProveedor({
@@ -166,6 +155,79 @@ function ComprasPage() {
     };
 
     const registrarCompra = async () => {
+    if (productosAgregados.length === 0) {
+        setMensaje("⚠️ Debes agregar al menos un producto a la compra");
+        return;
+    }
+
+    if (!proveedor || !proveedor.id) {
+        setMensaje("⚠️ Debes seleccionar un proveedor");
+        return;
+    }
+
+    // Validar que todos los productos tengan precioUnitario
+    const productosValidados = productosAgregados.map(p => {
+        return {
+        productoId: p.id,
+        cantidad: p.cantidad,
+        precioUnitario: p.precioUnitario ?? p.precioCompra ?? 0 // fallback
+        };
+    });
+
+    // Validar que no haya precios faltantes
+    const hayPrecioInvalido = productosValidados.some(p => p.precioUnitario <= 0);
+    if (hayPrecioInvalido) {
+        setMensaje("⚠️ Todos los productos deben tener un precio válido");
+        return;
+    }
+
+    const compra = {
+        proveedorId: proveedor.id,
+        numeroFactura: numeroFactura,
+        totalCompra: totalCompra,
+        detalleCompraDtoList: productosValidados
+    };
+
+    try {
+        console.log("✔️ Objeto enviado al backend:", compra);
+        const response = await fetch('http://localhost:8080/compras', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(compra),
+        });
+
+        if (!response.ok) {
+        throw new Error("Error al registrar la compra");
+        }
+
+        const compraRegistrada = await response.json();
+        setCompraConfirmada(compraRegistrada);
+        setMensaje(`✅ Compra registrada con éxito. ID: ${compraRegistrada.id}`);
+
+        // Limpiar el formulario
+        setProductosAgregados([]);
+        setTotalCompra(0);
+        setProducto({
+        id: '',
+        nombreProducto: '',
+        codigoBarras: '',
+        precioUnitario: 0,
+        cantidad: 1,
+        });
+        setNumeroFactura('');
+    } catch (error) {
+        console.error("❌ Error al registrar la compra:", error);
+        setMensaje("❌ Error al registrar la compra");
+    }
+  };
+
+
+    /*
+    //Método inicial que no ha funcionado pero podría servir
+    const registrarCompra = async () => {
         if (productosAgregados.length === 0) {
             setMensaje("⚠️ Debes agregar al menos un producto a la compra");
             return;
@@ -176,24 +238,17 @@ function ComprasPage() {
             return;
         }
 
-        const empleadoId = sessionStorage.getItem('empleadoId');
-        if (!empleadoId) {
-            setMensaje("⚠️ No se pudo obtener el empleado autenticado");
-            console.log("validar session", empleadoId)
-            return;
-        }
-
         /*const detallesCompra = productosAgregados.map((p) => ({
             productoId: p.id,
             cantidad: p.cantidad,
             precioUnitario: p.precioCompra,
         }));*/
 
+        /* continuacion del comentario
         try {
             // Preparar el objeto de compra
             const compra = {
                 proveedorId: proveedor.id,
-                empleadoId: Number(sessionStorage.getItem("empleadoId")), 
                 numeroFactura: numeroFactura,
                 totalCompra,
                 detalleCompraDtoList: productosAgregados.map(p => ({
@@ -239,7 +294,7 @@ function ComprasPage() {
             console.error("Error al registrar la compra:", error);
             setMensaje("❌ Error al registrar la compra");
         }
-    }
+    }*/
 
   return (
     <div className="container mt-4">

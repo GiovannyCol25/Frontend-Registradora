@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import '../App.css';
-import { parseJwt } from "../utils/jwt";
 
 const Login = () => {
     const [login, setLogin] = useState('');
@@ -24,14 +23,6 @@ const Login = () => {
                 const data = await response.json();
                 sessionStorage.setItem('token', data.jwtToken);
                 localStorage.setItem('rol', data.rol.toUpperCase()); 
-
-                const payload = parseJwt(data.jwtToken);
-            if (payload?.empleadoId) {
-                sessionStorage.setItem('empleadoId', payload.empleadoId);
-                console.log("Empleado autenticado:", payload.empleadoId);
-                } else {
-                console.warn("⚠️ El token no contiene empleadoId");
-            }
                 navigate('/menu');
             } else {
                 setError('Autenticación inválida. Por favor, verifica tus credenciales.');
