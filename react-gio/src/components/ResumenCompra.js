@@ -12,10 +12,9 @@ function ResumenCompra({ compra }) {
       <p><strong>ID Compra:</strong> {compra.id}</p>
       <p><strong>Fecha:</strong> {new Date(compra.fechaCompra).toLocaleString()}</p>
       <p><strong>Total Compra:</strong> ${formatearMiles(compra.totalCompra)}</p>
-      <p><strong>Forma de Pago:</strong> {compra.formaDePago}</p>
       <p><strong>Productos:</strong></p>
       <ul>
-        {compra.detalles.map((d, idx) => (
+        {compra.detalleCompraDtoList.map((d, idx) => (
           <li key={idx}>
             {d.cantidad} x {d.nombreProducto} (${formatearMiles(d.precioUnitario)})
           </li>

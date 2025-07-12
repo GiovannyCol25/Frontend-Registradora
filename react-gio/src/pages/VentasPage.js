@@ -171,6 +171,11 @@ function VentasPage() {
       return;
     }
 
+    if (!cliente || !cliente.id) {
+      setMensaje("⚠️ Debes seleccionar un cliente");
+      return;
+    }
+
     const detalleVenta = productosAgregados.map(p => ({
         nombreProducto: p.nombre,
         cantidad: p.cantidad,
@@ -185,8 +190,10 @@ function VentasPage() {
         totalVenta,
         descuento: 0,
         dineroRecibido,
+        clienteId: cliente.id,
       };
 
+      console.log("Registrando venta:", venta);
       const res = await fetch("http://localhost:8080/ventas", {
         method: "POST",
         headers: {

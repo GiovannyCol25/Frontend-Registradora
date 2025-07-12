@@ -206,6 +206,7 @@ function ComprasPage() {
         const compraRegistrada = await response.json();
         setCompraConfirmada(compraRegistrada);
         setMensaje(`✅ Compra registrada con éxito. ID: ${compraRegistrada.id}`);
+        console.log("📦 Compra confirmada:", compraRegistrada);
 
         // Limpiar el formulario
         setProductosAgregados([]);
@@ -223,79 +224,6 @@ function ComprasPage() {
         setMensaje("❌ Error al registrar la compra");
     }
   };
-
-
-    /*
-    //Método inicial que no ha funcionado pero podría servir
-    const registrarCompra = async () => {
-        if (productosAgregados.length === 0) {
-            setMensaje("⚠️ Debes agregar al menos un producto a la compra");
-            return;
-        }
-
-        if (!proveedor || !proveedor.id) {
-            setMensaje("⚠️ Debes seleccionar un proveedor");
-            return;
-        }
-
-        /*const detallesCompra = productosAgregados.map((p) => ({
-            productoId: p.id,
-            cantidad: p.cantidad,
-            precioUnitario: p.precioCompra,
-        }));*/
-
-        /* continuacion del comentario
-        try {
-            // Preparar el objeto de compra
-            const compra = {
-                proveedorId: proveedor.id,
-                numeroFactura: numeroFactura,
-                totalCompra,
-                detalleCompraDtoList: productosAgregados.map(p => ({
-                    productoId: p.id,
-                    cantidad: p.cantidad,
-                    precioUnitario: p.precioUnitario
-                }))
-            };
-
-            console.log("✔️ Objeto enviado al backend:", compra);
-
-            const response = await fetch('http://localhost:8080/compras', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(compra),
-            });
-            console.log('validar response de compra', compra);
-
-            if (!response.ok) {
-                throw new Error("Error al registrar la compra");
-            }    
-            console.log('validar response de compra', compra);
-
-            const compraRegistrada = await response.json();
-            setCompraConfirmada(compraRegistrada);
-            setMensaje(`✅ Compra registrada con éxito. ID: ${compraRegistrada.id}`);
-
-            // Limpiar los estados después de registrar la compra
-            setProductosAgregados([]);
-            setTotalCompra(0);
-            setProducto({
-                id: '',
-                nombreProducto: '',
-                codigoBarras: '',
-                precioCompra: 0,
-                cantidad: 1,
-            });
-            setNumeroFactura('');
-        } catch (error) {
-            console.error("Error al registrar la compra:", error);
-            setMensaje("❌ Error al registrar la compra");
-        }
-    }*/
-
   return (
     <div className="container mt-4">
       <h1>Compras</h1>
@@ -379,7 +307,7 @@ function ComprasPage() {
                 eliminarProducto={eliminarProducto}
                 registrarCompra={registrarCompra}
                 />
-                <ResumenCompra compras={compraConfirmada} />
+                <ResumenCompra compra={compraConfirmada} />
                 <button
                     className="btn btn-success w-100 mt-3"
                     onClick={registrarCompra}
@@ -398,6 +326,7 @@ function ComprasPage() {
                 proveedores={resultadosProveedor}
                 enviarEditar={handleEnviar}
                 modo="compra" // prop para manejo del botón seleccionar de la tabla
+                registrarCompra={registrarCompra}
                 />
             </div>
         </div>
