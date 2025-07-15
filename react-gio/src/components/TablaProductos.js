@@ -3,7 +3,7 @@ import React from 'react';
 
 function TablaProductos({ productos, onEliminar, onRegistrar, formatearMiles }) {
   return (
-    <div className="bg-card-dark shadow-sm p-3 rounded">
+    <div className="bg-card-dark shadow-sm p-3 rounded table-responsive">
       <table className="table table-dark table-striped mt-3">
         <thead>
           <tr>

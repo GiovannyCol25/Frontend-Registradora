@@ -171,10 +171,12 @@ function VentasPage() {
       return;
     }
 
-    if (!cliente || !cliente.id) {
+/*    if (!cliente || !cliente.id) {
       setMensaje("⚠️ Debes seleccionar un cliente");
       return;
     }
+      */
+    
 
     const detalleVenta = productosAgregados.map(p => ({
         nombreProducto: p.nombre,
@@ -189,10 +191,13 @@ function VentasPage() {
         formaDePago,
         totalVenta,
         descuento: 0,
-        dineroRecibido,
-        clienteId: cliente.id,
+        dineroRecibido
       };
 
+      if (cliente && cliente.id) {
+        venta.cliente = cliente.id;
+      }
+      
       console.log("Registrando venta:", venta);
       const res = await fetch("http://localhost:8080/ventas", {
         method: "POST",
@@ -228,10 +233,10 @@ function VentasPage() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container-fluid mt-4 px-3">
       <h1>Registrar Venta</h1>
         <div className="row">      
-          <div className="col-md-6">
+          <div className="col-12 col-md-6 mb-4">
           {/* Formulario */}
           <FormularioVenta
             producto={productoActual}
@@ -252,7 +257,7 @@ function VentasPage() {
           />
         </div>
 
-        <div className="col-md-6">
+        <div className="col-12 col-md-6">
           {/* Resultados de búsqueda */}
           {resultadosBusqueda.length > 0 && (
             <table className="table table-dark table-striped mt-3">

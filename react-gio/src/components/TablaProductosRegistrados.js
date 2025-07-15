@@ -3,7 +3,7 @@ import React from 'react';
 
 function TablaProductosRegistrados({ productos, formatearMiles }) {
   return (
-    <div className="mt-5">
+    <div className="mt-5 table-responsive">
       <h4 className="text-white text-center">Productos Registrados</h4>
       <table className="table table-light table-striped mt-3">
         <thead>

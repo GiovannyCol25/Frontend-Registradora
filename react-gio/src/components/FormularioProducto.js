@@ -12,48 +12,52 @@ function FormularioProducto({ producto, setProducto, onAgregar }) {
 
   return (
     // Formulario con estilos y evento de envío
-    <form className="bg-card-dark shadow-sm p-3 rounded mb-4" onSubmit={onAgregar}>
+    <form className="bg-card-dark shadow-sm p-4 rounded mb-4" onSubmit={onAgregar}>
       {/* Campo para el código de barras */}
-      <div className="mb-3">
-        <label className="form-label text-white">Código de Barras</label>
-        <input
-          type="text"
-          name="codigoBarras"
-          value={producto.codigoBarras} // Valor actual del estado
-          onChange={handleChange} // Maneja los cambios en el campo
-          className="form-control form-control-dark"
-          placeholder="Ingrese el código de barras"
-        />
-      </div>
+      <div className="row mb-3">
+        <div className="col-12 col-md-4 mb-3">
+          <label htmlFor='codigoBarras' className="form-label text-white">Código de Barras</label>
+          <input
+            type="text"
+            name="codigoBarras"
+            id="codigoBarras"
+            value={producto.codigoBarras} // Valor actual del estado
+            onChange={handleChange} // Maneja los cambios en el campo
+            className="form-control form-control-dark"
+            placeholder="Ingrese el código de barras"
+          />
+        </div>
 
-      {/* Campo para el nombre del producto */}
-      <div className="mb-3">
-        <label className="form-label text-white">Nombre del Producto</label>
-        <input
-          type="text"
-          name="nombreProducto"
-          value={producto.nombreProducto} // Valor actual del estado
-          onChange={handleChange} // Maneja los cambios en el campo
-          className="form-control form-control-dark"
-          placeholder="Ingrese el nombre"
-        />
-      </div>
+        {/* Campo para el nombre del producto */}
+        <div className="col-12 col-md-4 mb-3">
+          <label htmlFor='nombreProducto' className="form-label text-white">Nombre del Producto</label>
+          <input
+            type="text"
+            name="nombreProducto"
+            id="nombreProducto"
+            value={producto.nombreProducto} // Valor actual del estado
+            onChange={handleChange} // Maneja los cambios en el campo
+            className="form-control form-control-dark"
+            placeholder="Ingrese el nombre"
+          />
+        </div>
 
-      {/* Campo para el precio de venta */}
-      <div className="mb-4">
-        <label className="form-label text-white">Precio de Venta</label>
-        <input
-          type="number"
-          name="precioVenta"
-          value={producto.precioVenta} // Valor actual del estado
-          onChange={handleChange} // Maneja los cambios en el campo
-          className="form-control form-control-dark"
-          placeholder="Ingrese el precio"
-        />
+        {/* Campo para el precio de venta */}
+        <div className="col-12 col-md-4 mb-3">
+          <label htmlFor='precioVenta' className="form-label text-white">Precio de Venta</label>
+          <input
+            type="number"
+            name="precioVenta"
+            id="precioVenta"
+            value={producto.precioVenta} // Valor actual del estado
+            onChange={handleChange} // Maneja los cambios en el campo
+            className="form-control form-control-dark"
+            placeholder="Ingrese el precio"
+          />
+        </div>
       </div>
-
-      {/* Botón para añadir el producto */}
-      <button type="submit" className="btn btn-info w-100">Agregar Producto</button>
+        {/* Botón para añadir el producto */}
+        <button type="submit" className="btn btn-info w-100">Agregar Producto</button>
     </form>
   );
 }

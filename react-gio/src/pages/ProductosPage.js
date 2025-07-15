@@ -196,6 +196,8 @@ function ProductosPage() {
       {/* Formulario de búsqueda */}
       <div className="mt-3">
         <input
+          htmlFor="criterioBusqueda"
+          id="criterioBusqueda"
           type="text"
           placeholder="Buscar por ID, nombre o código de barras"
           className="form-control mb-2"

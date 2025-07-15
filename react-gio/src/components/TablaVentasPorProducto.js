@@ -4,7 +4,7 @@ function TablaVentasPorProducto({ ventas }) {
   let total = ventas.reduce((acc, v) => acc + (v.precioUnitario * v.cantidad), 0);
 
   return (
-    <div className="bg-card-dark p-3 rounded text-white mb-4">
+    <div className="bg-card-dark p-3 rounded text-white mb-4 table-responsive shadow-sm">
       <h5>Ventas por Producto</h5>
       <table className="table table-striped table-dark">
         <thead>

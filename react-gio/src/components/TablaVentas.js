@@ -3,39 +3,40 @@ import React from 'react';
 
 function TablaVentas({ ventas, pagina, totalPaginas, onPaginar, handleEditar }) {
   return (
-    <div className="bg-card-dark p-3 rounded text-white mb-4">
+    <div className="bg-card-dark p-3 rounded text-white shadow-sm">
       <h5>Ventas</h5>
-      <table className="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Total</th>
-            <th>Forma de Pago</th>
-            <th>Detalles</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ventas.map((venta) => (
-            <tr key={venta.id}>
-              <td>{venta.id}</td>
-              <td>{new Date(venta.fechaVenta).toLocaleDateString()}</td>
-              <td>${venta.totalVenta.toFixed(2)}</td>
-              <td>{venta.formaDePago}</td>
-              <td>
-                <ul className="mb-0">
-                  {venta.detalles.map((d, i) => (
-                    <li key={i}>
-                      {d.nombreProducto} - Cant: {d.cantidad} - ${d.precioUnitario.toFixed(2)}
-                    </li>
-                  ))}
-                </ul>
-              </td>
+      <div className="table-responsive">
+        <table className="table table-dark table-striped table-bordered align-middle">
+          <thead className="table-light">
+            <tr>
+              <th scope='col'>ID</th>
+              <th scope='col'>Fecha</th>
+              <th scope='col'>Total</th>
+              <th scope='col'>Forma de Pago</th>
+              <th scope='col'>Detalles</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {(ventas || []).map((venta) => (
+              <tr key={venta.id}>
+                <td>{venta.id}</td>
+                <td>{new Date(venta.fechaVenta).toLocaleDateString()}</td>
+                <td>${venta.totalVenta.toFixed(2)}</td>
+                <td>{venta.formaDePago}</td>
+                <td style={{ minWidth: '150px' }}>
+                  <ul className="mb-0 ps-3">
+                    {venta.detalles.map((d, i) => (
+                      <li key={i} style={{ whiteSpace: "nowrap" }}>
+                        {d.nombreProducto} - Cant: {d.cantidad} - ${d.precioUnitario.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <nav className="mt-3">
         <ul className="pagination justify-content-center">
           {pagina > 0 && (

@@ -13,9 +13,13 @@ function BusquedaProducto({ onBuscar, onListarVentas, onConsultarPorProducto }) 
   return (
     <form onSubmit={handleBuscar} className="bg-card-dark p-3 rounded mb-4">
       <div className="mb-3">
-        <label className="form-label text-white">Buscar Producto</label>
+        <label
+          htmlFor='busquedaProducto'
+          className="form-label text-white">Buscar Producto</label>
         <input
           type="text"
+          id='busquedaProducto'
+          name='busquedaProducto'
           className="form-control form-control-dark"
           placeholder="ID, Nombre o Código de Barras"
           value={busqueda}

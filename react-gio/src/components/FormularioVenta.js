@@ -32,7 +32,7 @@ function FormularioVenta({
   const totalConDescuento = (producto.precio * producto.cantidad - producto.descuento) || 0;
 
   return (
-    <form>
+    <form className="bg-card-dark shadow-sm p-4 rounded mb-4 text-white">
       {/*busqueda de cliente*/}
       <div className="mb-3">
         <label htmlFor="buscarCliente" className="form-label">Consulta de Clientes</label>
@@ -46,11 +46,11 @@ function FormularioVenta({
           placeholder="Ingrese ID Nombre del Cliente"
         />
       </div>
-      <div className="d-flex align-items-end mb-3">
+      <div className="d-flex align-items-end mb-4">
         <button
           type="button"
           name='buscarCliente'
-          className="btn btn-secondary w-50"
+          className="btn btn-secondary w-100"
           onClick={buscarCliente}
         >
           Buscar Cliente
@@ -72,25 +72,29 @@ function FormularioVenta({
         />
       </div>
 
-      <div className="d-flex align-items-end mb-3">
-        <button 
-        type="button"
-        name='consultar' 
-        className="btn btn-secondary w-50"
-        onClick={consultarProducto}
-        >
-          Buscar
+      <div className="row mb-4">
+        <div className="col-12 col-sm-6 mb-2">
+          <button 
+          type="button"
+          name='consultar' 
+          className="btn btn-secondary w-100"
+          onClick={consultarProducto}
+          >
+            Buscar
           </button>
-        <button 
-        type="button" 
-        className="btn btn-info w-50 ms-2" 
-        onClick={agregarProducto}>Agregar</button>
+        </div>
+        <div className="col-12 col-sm-6 mb-2">
+          <button 
+          type="button" 
+          className="btn btn-info w-100" 
+          onClick={agregarProducto}>Agregar</button>
+        </div>
       </div>
 
       <div className="bg-card-dark mb-3 shadow-sm">
         <h5 className="mb-3">Detalles del Producto</h5>
         <div className="row mb-3">
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='id'>ID Producto</label>
             <input type="text" 
             className="form-control form-control-dark" 
@@ -100,14 +104,14 @@ function FormularioVenta({
             value={producto.id} 
             readOnly />
           </div>
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='nombreProducto'>Nombre del Producto</label>
             <input type="text" 
             className="form-control form-control-dark" 
             id='nombreProducto'
             name="nombreProducto" value={producto.nombre} readOnly />
           </div>
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='codigo'>Código de Barras</label>
             <input type="text" 
             className="form-control form-control-dark" 
@@ -119,7 +123,7 @@ function FormularioVenta({
         </div>
 
         <div className="row mb-3">
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='precio'>Precio de Venta</label>
             {/* Visualiza el precio formateado */}
             <input type="number" 
@@ -133,7 +137,7 @@ function FormularioVenta({
             />
 
           </div>
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='cantidad'>Cantidad</label>
             <input type="number" 
             className="form-control form-control-dark" 
@@ -142,7 +146,7 @@ function FormularioVenta({
             placeholder="Cantidad del Producto"
             value={producto.cantidad ?? 0} onChange={handleChange} />
           </div>
-          <div className="col-md-4">
+          <div className="col-12 col-md-4 mb-3">
             <label htmlFor='descuento'>Descuento en valor</label>
             <input type="number" 
             className="form-control form-control-dark" 
@@ -179,7 +183,7 @@ function FormularioVenta({
             </small>
           </div>
         </div>
-        <div className="mb-3">
+        <div className="ejemb-3">
           <label htmlFor='cambio'>Cambio a entregar</label>
           <input type="text" 
           className="form-control form-control-dark" 

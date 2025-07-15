@@ -64,6 +64,7 @@ body, html, #root {
   padding: 0;
   height: 100%;
   background: none;
+
 }
 
 .container {
@@ -144,6 +145,9 @@ select.form-select-dark:focus {
 
 body, html {
   background: linear-gradient(135deg, #0d6efd, #000000);
+  font-size: 0.9rem; /* Reduce un poco el tamaño de texto general */
+  transform: scale(0.95); /* Escala todo el contenido */
+  transform-origin: top center;
 }
 
 .input-dark {
@@ -181,4 +185,29 @@ body, html {
   padding: 20px;
   border-radius: 10px;
   width: 300px;
+}
+
+@media (max-width: 576px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table th,
+  .table td {
+    font-size: 11px;
+    padding: 0.3rem;
+    white-space: nowrap;
+  }
+
+  ul {
+    padding-left: 1rem;
+  }
+
+  li {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

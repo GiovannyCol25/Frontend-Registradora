@@ -44,13 +44,19 @@ function ConsultasPage() {
 
   const cargarVentas = async (pagina = 0) => {
     try {
-      const res = await fetch(`${API_VENTAS}?page=${pagina}&size=20`);
+      const res = await fetch(`${API_VENTAS}?page=${pagina}&size=20`,{
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+        }
+      });
       if (!res.ok) throw new Error('Error al cargar ventas');
       const data = await res.json();
-      setVentas(data.content);
+      setVentas(data.contenido || []);
       setPagina(data.paginaActual || 0);
       setTotalPaginas(data.totalPaginas || 1);
       setMensaje('');
+      console.log(data);
     } catch (error) {
       setMensaje(error.message);
     }
@@ -69,38 +75,52 @@ function ConsultasPage() {
   };
 
   return (
-    <div className="container mt-4">
-      <h4 className="text-white text-center mb-4">Consultas de Ventas y Productos</h4>
+    <div className="container-fluid mt-4 px-3">
+      <div className="row justify-content-center">
+        <div className="col-12 col-lg-10">
+          <h4 className="text-white text-center mb-4">Consultas de Ventas y Productos</h4>
 
-      <BusquedaProducto
-        onBuscar={buscarProducto}
-        onListarVentas={cargarVentas}
-        onConsultarPorProducto={consultarPorProducto}
-      />
+          <BusquedaProducto
+            onBuscar={buscarProducto}
+            onListarVentas={cargarVentas}
+            onConsultarPorProducto={consultarPorProducto}
+          />
 
-      {producto.nombreProducto && (
-        <div className="bg-card-dark text-white p-3 mb-3 rounded">
-          <p><strong>ID:</strong> {producto.id}</p>
-          <p><strong>Nombre:</strong> {producto.nombreProducto}</p>
-          <p><strong>Código:</strong> {producto.codigoBarras}</p>
-          <p><strong>Precio:</strong> ${producto.precioVenta}</p>
+          {producto.nombreProducto && (
+            <div className="bg-card-dark text-white p-3 mb-3 rounded">
+              <div className="row">
+                <div className="col-12 col-md-6">
+                  <p><strong>ID:</strong> {producto.id}</p>
+                  <p><strong>Nombre:</strong> {producto.nombreProducto}</p>
+                </div>
+                <div className="col-12 col-md-6">
+                  <p><strong>Código:</strong> {producto.codigoBarras}</p>
+                  <p><strong>Precio:</strong> ${producto.precioVenta}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {ventas.length > 0 && (
+            <div className="table-responsive">
+              <TablaVentas
+                ventas={ventas}
+                pagina={pagina}
+                totalPaginas={totalPaginas}
+                onPaginar={cargarVentas}
+              />
+            </div>
+          )}
+
+          {ventasPorProducto.length > 0 && (
+            <div className="table-responsive">
+              <TablaVentasPorProducto ventas={ventasPorProducto} />
+            </div>
+          )}
+
+          {mensaje && <div className="alert alert-info mt-3">{mensaje}</div>}
         </div>
-      )}
-
-      {ventas.length > 0 && (
-        <TablaVentas
-          ventas={ventas}
-          pagina={pagina}
-          totalPaginas={totalPaginas}
-          onPaginar={cargarVentas}
-        />
-      )}
-
-      {ventasPorProducto.length > 0 && (
-        <TablaVentasPorProducto ventas={ventasPorProducto} />
-      )}
-
-      {mensaje && <div className="alert alert-info mt-3">{mensaje}</div>}
+      </div>
     </div>
   );
 }

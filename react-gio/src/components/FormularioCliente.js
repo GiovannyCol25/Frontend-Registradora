@@ -8,10 +8,11 @@ function FormularioCliente({ cliente, onChange, onSubmit }) {
       onSubmit={onSubmit}
     >
       <div className="mb-3">
-        <label className="form-label text-white">Nombre del Cliente</label>
+        <label htmlFor='nombre' className="form-label text-white">Nombre del Cliente</label>
         <input
           type="text"
           name="nombre"
+          id="nombre"
           value={cliente.nombre}
           onChange={onChange}
           className="form-control form-control-dark"
@@ -20,10 +21,11 @@ function FormularioCliente({ cliente, onChange, onSubmit }) {
       </div>
 
       <div className="mb-4">
-        <label className="form-label text-white">Número de Teléfono</label>
+        <label htmlFor='telefono' className="form-label text-white">Número de Teléfono</label>
         <input
           type="number"
           name="telefono"
+          id="telefono"
           value={cliente.telefono}
           onChange={onChange}
           className="form-control form-control-dark"
