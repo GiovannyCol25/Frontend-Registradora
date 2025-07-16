@@ -16,7 +16,6 @@
 .App-main {
   text-align: center;
   padding: 20px;
-  background-color: #adb5bd;
   min-height: 100vh;
   width: 100%;
 }
@@ -148,6 +147,9 @@ body, html {
   font-size: 0.9rem; /* Reduce un poco el tamaño de texto general */
   transform: scale(0.95); /* Escala todo el contenido */
   transform-origin: top center;
+  background-attachment: fixed; /* ✅ hace que el fondo no se "repita" al hacer scroll */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .input-dark {

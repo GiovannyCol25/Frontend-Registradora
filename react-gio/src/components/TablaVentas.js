@@ -1,10 +1,11 @@
 import React from 'react';
+import FiltroVentasForm from './FiltroVentasForm';
 
-
-function TablaVentas({ ventas, pagina, totalPaginas, onPaginar, handleEditar }) {
+function TablaVentas({ ventas, pagina, totalPaginas, onPaginar, onFiltrar }) {
   return (
     <div className="bg-card-dark p-3 rounded text-white shadow-sm">
       <h5>Ventas</h5>
+      <FiltroVentasForm onFiltrar={onFiltrar} />
       <div className="table-responsive">
         <table className="table table-dark table-striped table-bordered align-middle">
           <thead className="table-light">

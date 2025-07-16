@@ -1,4 +1,56 @@
 import React, { useState } from 'react';
+import ConsultaProducto from '../components/ConsultaProducto';
+import ConsultaVentasPaginadas from '../components/ConsultaVentasPaginadas';
+import ConsultaTotalVentasFecha from '../components/ConsultaTotalVentasFecha';
+
+function ConsultasPage() {
+  const [tabActivo, setTabActivo] = useState('producto');
+
+  const renderTab = () => {
+    switch (tabActivo) {
+      case 'producto':
+        return <ConsultaProducto />;
+      case 'ventas':
+        return <ConsultaVentasPaginadas />;
+      case 'total':
+        return <ConsultaTotalVentasFecha />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h4 className="text-white text-center mb-4">Consultas</h4>
+
+      <div className="btn-group mb-4 w-100" role="group">
+        <button
+          className={`btn ${tabActivo === 'producto' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => setTabActivo('producto')}
+        >
+          Producto
+        </button>
+        <button
+          className={`btn ${tabActivo === 'ventas' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => setTabActivo('ventas')}
+        >
+          Ventas
+        </button>
+        <button
+          className={`btn ${tabActivo === 'total' ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => setTabActivo('total')}
+        >
+          Total por Día
+        </button>
+      </div>
+
+      <div>{renderTab()}</div>
+    </div>
+  );
+}
+
+export default ConsultasPage;
+/*
 import BusquedaProducto from '../components/BusquedaProducto';
 import TablaVentas from '../components/TablaVentas';
 import TablaVentasPorProducto from '../components/TablaVentasPorProducto';
@@ -64,10 +116,40 @@ function ConsultasPage() {
 
   const consultarPorProducto = async (nombre) => {
     try {
-      const res = await fetch(`${API_VENTAS}/por-producto?nombreProducto=${nombre}`);
+      const res = await fetch(`${API_VENTAS}/por-producto?nombreProducto=${nombre}`, {
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+        }
+      });
       if (!res.ok) throw new Error('No hay ventas para este producto');
       const data = await res.json();
       setVentasPorProducto(Array.isArray(data) ? data : data.ventas || []);
+      setMensaje('');
+    } catch (error) {
+      setMensaje(error.message);
+    }
+  };
+
+  const filtrarVentas = async ({ formaPago, fechaInicio, fechaFin, pagina = 0 }) => {
+    try {
+      let url = `${API_VENTAS}/filtroVentas?page=${pagina}&size=20`;
+
+      if (formaPago) url += `&formaPago=${encodeURIComponent(formaPago)}`;
+      if (fechaInicio) url += `&fechaInicio=${fechaInicio}`;
+      if (fechaFin) url += `&fechaFin=${fechaFin}`;
+
+      const res = await fetch(url, {
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+        }});
+      if (!res.ok) throw new Error('Error al filtrar ventas');
+      const data = await res.json();
+
+      setVentas(data.contenido);
+      setPagina(data.paginaActual || 0);
+      setTotalPaginas(data.totalPaginas || 1);
       setMensaje('');
     } catch (error) {
       setMensaje(error.message);
@@ -108,6 +190,7 @@ function ConsultasPage() {
                 pagina={pagina}
                 totalPaginas={totalPaginas}
                 onPaginar={cargarVentas}
+                onFiltrar={filtrarVentas}
               />
             </div>
           )}
@@ -126,3 +209,4 @@ function ConsultasPage() {
 }
 
 export default ConsultasPage;
+*/
