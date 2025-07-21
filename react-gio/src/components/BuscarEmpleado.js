@@ -13,6 +13,9 @@ function BuscarEmpleado({ onBuscar }) {
   return (
     <form onSubmit={handleSubmit} className="d-flex mb-4">
       <input
+        htmlFor="empleadoId"
+        name='empleadoId'
+        id="empleadoId"
         type="number"
         className="form-control me-2"
         placeholder="Buscar Empleado por ID"

@@ -17,7 +17,7 @@ export function useProductoSearch() {
     if (!isNaN(criterioTrim) && criterioTrim.length <= 6) {
       url = `http://localhost:8080/productos/${criterioTrim}`;
     } else if (!isNaN(criterioTrim) && criterioTrim.length > 6) {
-      url = `http://localhost:8080/productos/codigo-barras/${criterioTrim}`;
+      url = `http://localhost:8080/productos/codigoBarras/${criterioTrim}`;
     } else {
       url = `http://localhost:8080/productos/nombre/${criterioTrim}`;
     }

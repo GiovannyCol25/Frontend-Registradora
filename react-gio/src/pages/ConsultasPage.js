@@ -1,4 +1,254 @@
 import React, { useState } from 'react';
+
+// Importa el componente que se mostrará en la pestaña de empleados
+import ConsultaEmpleados from '../components/consultas/ConsultaEmpleados';
+import ConsultaClientes from '../components/consultas/ConsultaClientes';
+import ConsultaProveedores from '../components/consultas/ConsultaProveedores';
+import ConsultaProductos from '../components/consultas/ConsultaProductos';
+import ConsultaVentas from '../components/consultas/ConsultaVentas';
+
+const ConsultasPage = () => {
+  const [tabSeleccionada, setTabSeleccionada] = useState('empleados'); // Por ahora solo una pestaña
+
+  return (
+    <div className="container mt-4">
+      <h2 className="mb-3">Consultas del Sistema</h2>
+
+      {/* Navegación de pestañas */}
+      <ul className="nav nav-tabs">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'empleados' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('empleados')}
+          >
+            Empleados
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'clientes' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('clientes')}
+          >
+            Clientes
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'proveedores' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('proveedores')}
+          >
+            Proveedores
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'productos' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('productos')}
+          >
+            Productos 
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'ventas' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('ventas')}
+          >
+            Ventas
+          </button>
+        </li>
+        {/* Puedes añadir más tabs así:
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tabSeleccionada === 'productos' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('productos')}
+          >
+            Productos
+          </button>
+        </li>
+        */}
+      </ul>
+      
+      {/* Contenido de cada tab */}
+      <div className="mt-4">
+        {tabSeleccionada === 'empleados' && <ConsultaEmpleados />}
+        {/* Agrega aquí más condiciones para futuras pestañas */}
+      </div>
+      <div className="mt-4">
+        {tabSeleccionada === 'clientes' && <ConsultaClientes />}
+      </div>
+      <div className="mt-4">
+        {tabSeleccionada === 'proveedores' && <ConsultaProveedores />}
+      </div>
+      <div className="mt-4">
+        {tabSeleccionada === 'productos' && <ConsultaProductos />} 
+      </div>
+      <div className="mt-4">
+        {tabSeleccionada === 'ventas' && <ConsultaVentas />}
+      </div>
+    </div>
+  );
+};
+
+export default ConsultasPage;
+
+
+/*
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+function ConsultasPage() {
+  const [activeTab, setActiveTab] = useState('productos');
+  const [criterio, setCriterio] = useState('');
+  const [tab, setTab] = useState('empleados');
+
+  return (
+    // Página de Consultas
+    <div className="container mt-4">
+      <h2>Consultas del Sistema</h2>
+
+      {/* Tabs *//*}
+      <ul className="nav nav-tabs mb-4">
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'productos' ? 'active' : ''}`} onClick={() => setActiveTab('productos')}>
+            Productos
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'ventas' ? 'active' : ''}`} onClick={() => setActiveTab('ventas')}>
+            Ventas
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'compras' ? 'active' : ''}`} onClick={() => setActiveTab('compras')}>
+            Compras
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'clientes' ? 'active' : ''}`} onClick={() => setActiveTab('clientes')}>
+            Clientes
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'empleados' ? 'active' : ''}`} onClick={() => setActiveTab('empleados')}>
+            Empleados
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'proveedores' ? 'active' : ''}`} onClick={() => setActiveTab('proveedores')}>
+            Proveedores
+          </button>
+        </li>
+      </ul>
+
+      {/* Contenido dinámico *//*}
+      {activeTab === 'productos' && (
+        <div>
+          <h5>Consultas de Productos</h5>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Nombre (parcial o completo)" />
+            <button className="btn btn-primary mt-2">Buscar por Nombre</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Código de Barras" />
+            <button className="btn btn-primary mt-2">Buscar por Código</button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'ventas' && (
+        <div>
+          <h5>Consultas de Ventas</h5>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID de Venta" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Fecha (YYYY-MM-DD)" />
+            <button className="btn btn-primary mt-2">Ventas por Fecha</button>
+            <button className="btn btn-secondary mt-2 ms-2">Total Diario</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID del Producto" />
+            <button className="btn btn-primary mt-2">Ventas por Producto</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Filtro Avanzado (JSON o múltiple)" />
+            <button className="btn btn-primary mt-2">Filtrar Ventas</button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'compras' && (
+        <div>
+          <h5>Consultas de Compras</h5>
+          <div className="mb-3">
+            <button className="btn btn-primary">Listar Todas las Compras</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID de Compra" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'clientes' && (
+        <div>
+          <h5>Consultas de Clientes</h5>
+          <div className="mb-3">
+            <button className="btn btn-primary">Listar Clientes</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID del Cliente" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Nombre del Cliente" />
+            <button className="btn btn-primary mt-2">Buscar por Nombre</button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'empleados' && (
+        <div>
+          <h5>Consultas de Empleados</h5>
+          <div className="mb-3">
+            <button className="btn btn-primary">Listar Empleados</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID del Empleado" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'proveedores' && (
+        <div>
+          <h5>Consultas de Proveedores</h5>
+          <div className="mb-3">
+            <button className="btn btn-primary">Listar Proveedores</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="ID del Proveedor" />
+            <button className="btn btn-primary mt-2">Buscar por ID</button>
+          </div>
+          <div className="mb-3">
+            <input className="form-control" placeholder="Nombre del Proveedor" />
+            <button className="btn btn-primary mt-2">Buscar por Nombre</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default ConsultasPage;*/
+
+/*
+import React, { useState } from 'react';
 import ConsultaProducto from '../components/ConsultaProducto';
 import ConsultaVentasPaginadas from '../components/ConsultaVentasPaginadas';
 import ConsultaTotalVentasFecha from '../components/ConsultaTotalVentasFecha';
@@ -49,164 +299,4 @@ function ConsultasPage() {
   );
 }
 
-export default ConsultasPage;
-/*
-import BusquedaProducto from '../components/BusquedaProducto';
-import TablaVentas from '../components/TablaVentas';
-import TablaVentasPorProducto from '../components/TablaVentasPorProducto';
-
-function ConsultasPage() {
-  const [producto, setProducto] = useState({ id: '', nombreProducto: '', codigoBarras: '', precioVenta: '' });
-  const [ventas, setVentas] = useState([]);
-  const [ventasPorProducto, setVentasPorProducto] = useState([]);
-  const [mensaje, setMensaje] = useState('');
-  const [pagina, setPagina] = useState(0);
-  const [totalPaginas, setTotalPaginas] = useState(0);
-
-  const API_PRODUCTO = 'http://localhost:8080/productos';
-  const API_VENTAS = 'http://localhost:8080/ventas';
-
-  const buscarProducto = async (query) => {
-    try {
-      let url = !isNaN(query)
-        ? `${API_PRODUCTO}/${query}`
-        : `${API_PRODUCTO}/nombre/${query}`;
-
-      let res = await fetch(url);
-      if (!res.ok && !isNaN(query)) {
-        // intentar por código de barras si ID falló
-        url = `${API_PRODUCTO}/codigoBarras/${query}`;
-        res = await fetch(url);
-      }
-
-      if (!res.ok) throw new Error('Producto no encontrado');
-      const data = await res.json();
-
-      if (Array.isArray(data) && data.length === 1) {
-        setProducto(data[0]);
-      } else if (!Array.isArray(data)) {
-        setProducto(data);
-      } else {
-        setMensaje('Se encontraron múltiples productos');
-      }
-    } catch (error) {
-      setMensaje(error.message);
-    }
-  };
-
-  const cargarVentas = async (pagina = 0) => {
-    try {
-      const res = await fetch(`${API_VENTAS}?page=${pagina}&size=20`,{
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-        }
-      });
-      if (!res.ok) throw new Error('Error al cargar ventas');
-      const data = await res.json();
-      setVentas(data.contenido || []);
-      setPagina(data.paginaActual || 0);
-      setTotalPaginas(data.totalPaginas || 1);
-      setMensaje('');
-      console.log(data);
-    } catch (error) {
-      setMensaje(error.message);
-    }
-  };
-
-  const consultarPorProducto = async (nombre) => {
-    try {
-      const res = await fetch(`${API_VENTAS}/por-producto?nombreProducto=${nombre}`, {
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-        }
-      });
-      if (!res.ok) throw new Error('No hay ventas para este producto');
-      const data = await res.json();
-      setVentasPorProducto(Array.isArray(data) ? data : data.ventas || []);
-      setMensaje('');
-    } catch (error) {
-      setMensaje(error.message);
-    }
-  };
-
-  const filtrarVentas = async ({ formaPago, fechaInicio, fechaFin, pagina = 0 }) => {
-    try {
-      let url = `${API_VENTAS}/filtroVentas?page=${pagina}&size=20`;
-
-      if (formaPago) url += `&formaPago=${encodeURIComponent(formaPago)}`;
-      if (fechaInicio) url += `&fechaInicio=${fechaInicio}`;
-      if (fechaFin) url += `&fechaFin=${fechaFin}`;
-
-      const res = await fetch(url, {
-        headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-        }});
-      if (!res.ok) throw new Error('Error al filtrar ventas');
-      const data = await res.json();
-
-      setVentas(data.contenido);
-      setPagina(data.paginaActual || 0);
-      setTotalPaginas(data.totalPaginas || 1);
-      setMensaje('');
-    } catch (error) {
-      setMensaje(error.message);
-    }
-  };
-
-  return (
-    <div className="container-fluid mt-4 px-3">
-      <div className="row justify-content-center">
-        <div className="col-12 col-lg-10">
-          <h4 className="text-white text-center mb-4">Consultas de Ventas y Productos</h4>
-
-          <BusquedaProducto
-            onBuscar={buscarProducto}
-            onListarVentas={cargarVentas}
-            onConsultarPorProducto={consultarPorProducto}
-          />
-
-          {producto.nombreProducto && (
-            <div className="bg-card-dark text-white p-3 mb-3 rounded">
-              <div className="row">
-                <div className="col-12 col-md-6">
-                  <p><strong>ID:</strong> {producto.id}</p>
-                  <p><strong>Nombre:</strong> {producto.nombreProducto}</p>
-                </div>
-                <div className="col-12 col-md-6">
-                  <p><strong>Código:</strong> {producto.codigoBarras}</p>
-                  <p><strong>Precio:</strong> ${producto.precioVenta}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {ventas.length > 0 && (
-            <div className="table-responsive">
-              <TablaVentas
-                ventas={ventas}
-                pagina={pagina}
-                totalPaginas={totalPaginas}
-                onPaginar={cargarVentas}
-                onFiltrar={filtrarVentas}
-              />
-            </div>
-          )}
-
-          {ventasPorProducto.length > 0 && (
-            <div className="table-responsive">
-              <TablaVentasPorProducto ventas={ventasPorProducto} />
-            </div>
-          )}
-
-          {mensaje && <div className="alert alert-info mt-3">{mensaje}</div>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default ConsultasPage;
-*/
+export default ConsultasPage;*/

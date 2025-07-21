@@ -171,13 +171,6 @@ function VentasPage() {
       return;
     }
 
-/*    if (!cliente || !cliente.id) {
-      setMensaje("⚠️ Debes seleccionar un cliente");
-      return;
-    }
-      */
-    
-
     const detalleVenta = productosAgregados.map(p => ({
         nombreProducto: p.nombre,
         cantidad: p.cantidad,

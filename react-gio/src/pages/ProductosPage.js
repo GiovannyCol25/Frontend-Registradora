@@ -99,7 +99,7 @@ function ProductosPage() {
     }
     //Buscar por código de barras si es un número largo
     else if (!isNaN(criterio) && criterio.length > 6) {
-      url = `http://localhost:8080/productos/codigo-barras/${criterio}`;
+      url = `http://localhost:8080/productos/codigoBarras/${criterio}`;
     }
     //Buscar por nombre si es una cadena de texto
     else {
