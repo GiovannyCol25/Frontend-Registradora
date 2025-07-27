@@ -198,6 +198,7 @@ function ProductosPage() {
         <input
           htmlFor="criterioBusqueda"
           id="criterioBusqueda"
+          name='criterioBusqueda'
           type="text"
           placeholder="Buscar por ID, nombre o código de barras"
           className="form-control mb-2"

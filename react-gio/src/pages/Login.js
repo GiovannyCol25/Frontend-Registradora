@@ -40,8 +40,10 @@ const Login = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label className="form-label">Usuario</label>
+                        <label htmlFor='login' className="form-label">Usuario</label>
                         <input
+                            id="login"
+                            name="login"
                             type="text"
                             className="form-control input-dark"
                             value={login}
@@ -51,8 +53,10 @@ const Login = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">Contraseña</label>
+                        <label htmlFor='clave' className="form-label">Contraseña</label>
                         <input
+                            id="clave"
+                            name="clave"
                             type="password"
                             className="form-control input-dark"
                             value={clave}

@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import TablaProductos from '../TablaProductos';
+//import TablaProductos from '../TablaProductos';
 import FormularioProducto from "../FormularioProducto";
+import TablaProductosRegistrados from "../TablaProductosRegistrados";
 
 const ConsultaProductos = () => {
     const [producto, setProducto] = useState({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
-    const [productos, setProductos] = useState([]);
     const [mensaje, setMensaje] = useState('');
     const [criterioBusqueda, setCriterioBusqueda] = useState('');
     const [resultadosBusqueda, setResultadosBusqueda] = useState([]);
@@ -50,7 +50,7 @@ const ConsultaProductos = () => {
         }else {
         setProducto(data); // Actualiza el producto con los datos obtenidos
         setMensaje(`🔍 Producto encontrado:`);
-        //setResultadosBusqueda(data);
+        setResultadosBusqueda([]);
         //setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
         }
         } catch (error) {
@@ -93,11 +93,12 @@ const ConsultaProductos = () => {
                     </div>
                 )}
                 {resultadosBusqueda.length > 0 && (
-                    <TablaProductos 
-                    productos={productos} 
+                    <TablaProductosRegistrados
+                    productos={resultadosBusqueda} 
+                    formatearMiles={(num) => new Intl.NumberFormat().format(num)}
                     onSelectProducto={(producto) => {
                         setProducto(producto);
-                        setProductos([]);
+                        setProducto([]);
                     }}
                     />
                 )}
