@@ -12,7 +12,7 @@ const ConsultaCompras = () => {
   const API_COMPRAS = 'http://localhost:8080/compras';
   const [tipoConsulta, setTipoConsulta] = useState('todas');
   const [pagina, setPagina] = useState(0);
-  const [comprasPorFecha, setComprasPorFecha] = useState([]);
+  const [comprasPorFecha, setComprasPorFecha] = useState({});
   const size = 0; // Tamaño de página para paginación
 
   // ✅ Consulta 2: Filtrar por fechas
@@ -26,12 +26,10 @@ const ConsultaCompras = () => {
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`
         }
       });
-      console.log(res);
       if (!res.ok) throw new Error('Error al filtrar compras');
       const data = await res.json();
       setCompras(data.compras);
       setTotalPaginas(data.totalPaginas);
-      console.log(data);
     } catch (error) {
       setMensaje(error.message);
     }
@@ -73,13 +71,18 @@ const ConsultaCompras = () => {
     }
 
     try {
-      let url = `${API_COMPRAS}/compras-diarias/${fechaInicio}`;
+
+      const fechaFormateada = new Date(fechaInicio).toISOString().split('T')[0];
+
+      let url = `${API_COMPRAS}/compras-diarias/total/${fechaFormateada}`;
+      console.log("consultas validadas", fechaFormateada);
       const respuesta = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`
         }
       });
+      console.log(respuesta);
       if (respuesta.status === 404) {
         setCompras([]);
         setMensaje('No se encontraron compras para la fecha seleccionada');
@@ -240,17 +243,12 @@ const ConsultaCompras = () => {
         </button>
       )}
 
-      {comprasPorFecha.length > 0 && (
+      {comprasPorFecha && comprasPorFecha.totalCompras !== undefined && (
         <div className="mt-3">
           <h5>Resultado:</h5>
-          <div className="d-flex flex-wrap gap-3">
-          {comprasPorFecha.map((item, i) => (
-            <div key={i} className="card p-3 shadow-sm bg-light" style={{ minWidth: '250px' }}>
-              <h6>📅 Fecha: {item.fechaCompra}</h6>
-              <p>💰 Total: ${item.totalCompras}</p>
-              <p>🛒 Compras: {item.cantidadCompras}</p>
-            </div>
-          ))}
+          <div className="card p-3 shadow-sm bg-light" style={{ minWidth: '250px' }}>
+            <h6>📅 Fecha: {comprasPorFecha.fechaCompra}</h6>
+            <p>💰 Total: ${comprasPorFecha.totalCompras}</p>
           </div>
         </div>
       )}

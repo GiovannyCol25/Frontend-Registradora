@@ -78,8 +78,10 @@ const ConsultaVentas = () => {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
       });
+      console.log(res)
       if (!res.ok) throw new Error("No hay datos para esta fecha");
       const data = await res.json();
+      console.log(data);
       setTotalVentasCard(data);
     } catch (error) {
       setMensaje(error.message);
@@ -111,8 +113,13 @@ const ConsultaVentas = () => {
 
       {/* Selector de tipo de consulta */}
       <div className="mb-3">
-        <label>Tipo de Consulta</label>
+        <label
+          htmlFor="tipoConsulta"
+          className="form-label"
+        >Tipo de Consulta</label>
         <select
+          id="tipoConsulta"
+          name="tipoConsulta"
           className="form-select"
           value={tipoConsulta}
           onChange={(e) => setTipoConsulta(e.target.value)}
@@ -126,12 +133,16 @@ const ConsultaVentas = () => {
       {tipoConsulta === "fechas" && (
         <div className="mb-3 d-flex gap-2">
           <input
+            name="fechaInicio"
+            id="fechaInicio"
             type="date"
             className="form-control"
             value={fechaInicio}
             onChange={(e) => setFechaInicio(e.target.value)}
           />
           <input
+            name="fechaFin"
+            id="fechaFin"
             type="date"
             className="form-control"
             value={fechaFin}
@@ -167,9 +178,8 @@ const ConsultaVentas = () => {
       {/* ✅ Card: Total Ventas */}
       {totalVentasCard && (
         <div className="card mt-3 p-3">
-          <h5>Total Ventas - Fecha: {totalVentasCard.fechaVenta}</h5>
-          <p>💰 Total: ${totalVentasCard.totalVentas}</p>
-          <p>🛒 Cantidad de Ventas: {totalVentasCard.cantidadVentas}</p>
+          <h5>Total Ventas - Fecha: {totalVentasCard.fecha}</h5>
+          <h5>💰 Total: ${totalVentasCard.totalVentas}</h5>
         </div>
       )}
 
@@ -178,9 +188,28 @@ const ConsultaVentas = () => {
         <div className="card mt-3 p-3">
           <h5>Detalles de la Venta #{ventaSeleccionada.id}</h5>
           <p>Fecha: {ventaSeleccionada.fechaVenta}</p>
-          <p>Cantidad: ${ventaSeleccionada.cantidad}</p>
-          <p>Nombre Producto: {ventaSeleccionada.nombreProducto}</p>
-          <p>Precio: ${ventaSeleccionada.precioUnitario}</p>
+          <p>Total: ${ventaSeleccionada.totalVenta}</p>
+          <h6>Productos vendidos:</h6>
+          <table className="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>ID Producto</th>
+                <th>Cantidad</th>
+                <th>Nombre Producto</th>
+                <th>Precio Unitario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ventaSeleccionada.detalles.map((detalle, index) => (
+                <tr key={index}>
+                  <td>{detalle.idProducto}</td>
+                  <td>{detalle.cantidad}</td>
+                  <td>{detalle.nombreProducto}</td>
+                  <td>${detalle.precioUnitario}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <button
             className="btn btn-sm btn-danger"
             onClick={() => setVentaSeleccionada(null)}

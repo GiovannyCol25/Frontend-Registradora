@@ -12,7 +12,7 @@ function TablaCompras({ titulo = "Productos", compras, eliminarCompra, resultado
     return (
         <div className="bg-card-dark p-3 rounded text-white mb-4">
         <h5>Productos agregados a la Compra</h5>
-        <table className="table table-dark table-striped">
+        <table className="table table-dark table-striped responsive">
             <thead>
             <tr>
                 <th>ID</th>
