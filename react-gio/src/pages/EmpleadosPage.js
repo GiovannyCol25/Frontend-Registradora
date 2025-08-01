@@ -186,15 +186,6 @@ function EmpleadosPage() {
       // Limpia el formulario después de actualizar
       setEmpleadoEncontrado(null);
       listarEmpleados();
-/*
-      // Limpia el formulario después de actualizar
-      setEmpleado({
-        nombreEmpleado: '',
-        cargo: '',
-        telefono: '',
-        usuario: { login: '', clave: '', rol: 'EMPLEADO' },
-      });
-      */
 
     } catch (error) {
       console.error('Error al actualizar:', error);
@@ -204,11 +195,11 @@ function EmpleadosPage() {
 
   return (
     <div className="container mt-4">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-10 col-lg-8">
-          {/* Título de la página */}
-          <h4 className="text-white text-center mb-4">Registro de Empleados y Usuarios</h4>
-
+      {/* Título de la página */}
+      <h4 className="text-white text-center mb-4">Registro de Empleados y Usuarios</h4>
+      
+        <div className="col-md-6 mb-4">
+          
           {/* Formulario para registrar empleados */}
           <FormularioEmpleado
             empleado={empleado}
@@ -227,7 +218,9 @@ function EmpleadosPage() {
 
           {/* Componente para buscar empleados */}
           <BuscarEmpleado onBuscar={buscarEmpleado} />
+          </div>
 
+        <div className="col-md-6">
           {/* Muestra los datos del empleado encontrado */}
           {empleadoEncontrado && (
             <div className="alert alert-success mt-3">
@@ -252,7 +245,7 @@ function EmpleadosPage() {
           onEliminar={eliminarEmpleado} />
           </div>
         </div>
-    </div>
+    
   );
 }
 

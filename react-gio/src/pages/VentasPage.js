@@ -53,8 +53,7 @@ function VentasPage() {
     } else {
       url = `http://localhost:8080/productos/nombre/${criterio}`;
     }
-    console.log("Consultando URL:", url);
-
+    
     try {
       const res = await fetch(url, {
         headers: {
@@ -191,7 +190,6 @@ function VentasPage() {
         venta.cliente = cliente.id;
       }
       
-      console.log("Registrando venta:", venta);
       const res = await fetch("http://localhost:8080/ventas", {
         method: "POST",
         headers: {
