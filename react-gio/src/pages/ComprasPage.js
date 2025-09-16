@@ -20,6 +20,7 @@ function ComprasPage() {
     //const [productos, setProductos] = React.useState([]);
     const [resultadosBusqueda, setResultadosBusqueda] = React.useState([]);
     const [productosAgregados, setProductosAgregados] = React.useState([]);
+    // Actualiza el total de la compra cuando cambian los productos agregados
     React.useEffect(() => {
       const total = productosAgregados.reduce((acum, prod) => {
         return acum + (prod.precioCompra * prod.cantidad);

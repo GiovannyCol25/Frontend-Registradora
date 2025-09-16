@@ -23,11 +23,40 @@ function FormularioCompras({
 
 
   // Procesa el cambio en los inputs del producto
-  const handleChange = (e) => {
+/*  const handleChange = (e) => {
     const { name, value } = e.target;
     // Para campos numéricos, convierte el valor a número
     const processedValue = ['cantidad', 'precioCompra'].includes(name) ? Number(value) : value;
     setProducto({ ...producto, [name]: processedValue });
+  };*/
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let processedValue = value;
+    // Convierte a número si el campo es numérico
+    if (['cantidad', 'precioCompra', 'totalProducto'].includes(name)) {
+      processedValue = value === '' ? '' : Number(value);
+    }
+
+    // Copiamos el producto actual
+    let updatedProducto = { ...producto, [name]: processedValue };
+
+    // Reglas de actualización automática:
+    if (name === "totalProducto") {
+      // Si cambia el totalProducto -> recalcula precioCompra
+      if (updatedProducto.cantidad > 0) {
+        updatedProducto.precioCompra = processedValue / updatedProducto.cantidad;
+      }
+    }
+
+    if (name === "cantidad") {
+      // Si cambia la cantidad -> recalcula precioCompra usando el totalProducto
+      if (updatedProducto.totalProducto > 0 && processedValue > 0) {
+        updatedProducto.precioCompra = updatedProducto.totalProducto / processedValue;
+      }
+    }
+
+    setProducto(updatedProducto);
   };
 
   return (
@@ -139,6 +168,17 @@ function FormularioCompras({
                         onChange={handleChange}
                         disabled
                     />
+                </div>
+                <div className="col-md-4">
+                  <label htmlFor="totalProducto" className="form-label">Total del Producto</label>
+                  <input
+                    type="number"
+                    className="form-control form-control-dark"
+                    id="totalProducto"
+                    name="totalProducto"
+                    value={producto.totalProducto || ''}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="col-md-4">
                     <label htmlFor="precioCompra" className="form-label">Precio</label>
