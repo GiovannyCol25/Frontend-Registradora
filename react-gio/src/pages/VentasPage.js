@@ -258,6 +258,7 @@ function VentasPage() {
                   <th>Código</th>
                   <th>Nombre</th>
                   <th>Precio</th>
+                  <th>Stock</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -269,6 +270,7 @@ function VentasPage() {
                     <td>{p.codigoBarras}</td>
                     <td>{p.nombreProducto}</td>
                     <td>${formatearMiles(p.precioVenta)}</td>
+                    <td>{p.stock}</td>
                     <td>
                       <button
                         className="btn btn-sm btn-info"

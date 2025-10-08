@@ -12,6 +12,7 @@ function TablaProductosRegistrados({ productos, formatearMiles }) {
             <th>Código</th>
             <th>Nombre</th>
             <th>Precio</th>
+            <th>Stock</th>
           </tr>
         </thead>
         <tbody>
@@ -21,6 +22,7 @@ function TablaProductosRegistrados({ productos, formatearMiles }) {
               <td>{p.codigoBarras}</td>
               <td>{p.nombreProducto}</td>
               <td>{formatearMiles(p.precioVenta)}</td>
+              <td>{p.stock}</td>
             </tr>
           ))}
         </tbody>

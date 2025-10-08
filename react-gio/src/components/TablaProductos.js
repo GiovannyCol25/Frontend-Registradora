@@ -10,6 +10,7 @@ function TablaProductos({ productos, onEliminar, onRegistrar, formatearMiles }) 
             <th>Código</th>
             <th>Nombre</th>
             <th>Precio</th>
+            <th>Stock</th>
             <th>Eliminar</th>
           </tr>
         </thead>
@@ -19,6 +20,7 @@ function TablaProductos({ productos, onEliminar, onRegistrar, formatearMiles }) 
               <td>{p.codigoBarras}</td>
               <td>{p.nombreProducto}</td>
               <td>{formatearMiles(p.precioVenta)}</td>
+              <td>{p.stock}</td>
               <td>
                 <button className="btn btn-sm btn-danger" onClick={() => onEliminar(i)}>X</button>
               </td>

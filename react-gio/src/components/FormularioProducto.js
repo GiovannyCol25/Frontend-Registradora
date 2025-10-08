@@ -7,7 +7,11 @@ function FormularioProducto({ producto, setProducto, onAgregar }) {
   // Maneja los cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target; // Obtiene el nombre y valor del campo
-    setProducto({ ...producto, [name]: value }); // Actualiza el estado del producto
+    if (name === 'precioVenta' || name === 'stock') {
+      setProducto({ ...producto, [name]: value === '' ? '' : value }); // Actualiza el estado del producto
+    } else {
+      setProducto({ ...producto, [name]: value }); // Actualiza el estado del producto
+    }
   };
 
   return (
@@ -53,6 +57,20 @@ function FormularioProducto({ producto, setProducto, onAgregar }) {
             onChange={handleChange} // Maneja los cambios en el campo
             className="form-control form-control-dark"
             placeholder="Ingrese el precio"
+          />
+        </div>
+
+        {/*Campo para el stock del producto*/}
+        <div className="col-12 col-md-4 mb-3">
+          <label htmlFor='stock' className="form-label text-white">Stock</label>
+          <input
+            type="number"
+            name="stock"
+            id="stock"
+            value={producto.stock} // Valor actual del estado
+            onChange={handleChange} // Maneja los cambios en el campo
+            className="form-control form-control-dark"
+            placeholder="Ingrese el stock"
           />
         </div>
       </div>

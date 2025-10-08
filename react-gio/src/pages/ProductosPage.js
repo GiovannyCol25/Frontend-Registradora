@@ -1,5 +1,3 @@
-// src/pages/ProductosPage.js
-
 import React, { useState } from 'react';
 import FormularioProducto from '../components/FormularioProducto'; // Componente para el formulario de productos
 import TablaProductos from '../components/TablaProductos'; // Componente para mostrar productos en una tabla
@@ -8,7 +6,7 @@ import { formatearMiles } from '../utils/formato'; // Utilidad para formatear n�
 
 function ProductosPage() {
   // Estado para manejar el producto actual en el formulario
-  const [producto, setProducto] = useState({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+  const [producto, setProducto] = useState({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: '' });
 
   // Estado para manejar la lista de productos agregados
   const [productos, setProductos] = useState([]);
@@ -36,11 +34,11 @@ function ProductosPage() {
     // Agrega el producto a la lista de productos
     setProductos([
       ...productos,
-      { codigoBarras, nombreProducto, precioVenta: parseFloat(precioVenta) },
+      { codigoBarras, nombreProducto, precioVenta: parseFloat(precioVenta), stock: parseInt(producto.stock) },
     ]);
 
     // Limpia el formulario y el mensaje
-    setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+    setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: '' });
     setMensaje('');
   };
 
@@ -120,10 +118,25 @@ function ProductosPage() {
       const data = await res.json();
       //Si es un Array de la búsqueda por nombre muestra tabla de selección
       if (Array.isArray(data)) {
-        setResultadosBusqueda(data);
+        // MODIFICADO PARA ASEGURAR QUE STOCK ESTE DEFINIDO
+        setResultadosBusqueda(
+          data.map((p) => ({
+            id: p.id || '',
+            codigoBarras: p.codigoBarras || '',
+            nombreProducto: p.nombreProducto || '',
+            precioVenta: p.precioVenta || '',
+            stock: Number(p.stock) || 0, // Asegura que stock sea un número
+        }))
+        );
         setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
       }else {
-      setProducto(data); // Actualiza el producto con los datos obtenidos
+      setProducto({
+        id: data.id || '',
+        codigoBarras: data.codigoBarras || '',
+        nombreProducto: data.nombreProducto || '',
+        precioVenta: data.precioVenta || '',
+        stock: data.stock ?? ''
+      }); // Actualiza el producto con los datos obtenidos
       setMensaje(`🔍 Producto encontrado:`);
       //setResultadosBusqueda(data);
       //setMensaje(`🔍 ${data.length} resultado(s) encontrado(s)`);
@@ -131,26 +144,36 @@ function ProductosPage() {
     } catch (error) {
       setMensaje('❌ Error en la búsqueda de productos');
       console.error(error);
-      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: '' });
       setResultadosBusqueda([]); // Limpia los resultados de búsqueda
     }
   };
 
   const actualizarProducto = async () => {
     try {
+      //CONVERSION DE DATOS PARA EL ENVIO AL BACKEND
+      const productoActualizado = {
+        ...producto,
+        precioVenta: parseFloat(producto.precioVenta) || 0,
+        stock: parseInt(producto.stock, 10) || 0,
+      };
+
+      console.log('Datos enviados al backend:', productoActualizado);
+
       const res = await fetch(`http://localhost:8080/productos/${producto.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         },
-        body: JSON.stringify(producto),
+        body: JSON.stringify(productoActualizado),
       });
 
       if (!res.ok) throw new Error('Error al actualizar el producto');
 
       setMensaje('✅ Producto actualizado exitosamente');
-      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '' });
+      setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: ''});
+      console.log('Producto actualizado:', productoActualizado);
       setResultadosBusqueda([]);
     } catch (err) {
       console.error(err);
@@ -219,6 +242,7 @@ function ProductosPage() {
               <th>Nombre</th>
               <th>Precio</th>
               <th>Código Barras</th>
+              <th>Stock</th>
               <th>Acción</th>
             </tr>
           </thead>
@@ -229,6 +253,7 @@ function ProductosPage() {
                 <td>{p.nombreProducto}</td>
                 <td>{formatearMiles(p.precioVenta)}</td>
                 <td>{p.codigoBarras}</td>
+                <td>{p.stock}</td>
                 <td>
                   <button
                     className="btn btn-sm btn-info"
