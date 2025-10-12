@@ -7,6 +7,7 @@ import ConsultaProveedores from '../components/consultas/ConsultaProveedores';
 import ConsultaProductos from '../components/consultas/ConsultaProductos';
 import ConsultaVentas from '../components/consultas/ConsultaVentas';
 import ConsultaCompras from '../components/consultas/ConsultaCompras';
+import ConsultaUtilidades from '../components/consultas/ConsultaUtilidades';
 
 const ConsultasPage = () => {
   const [tabSeleccionada, setTabSeleccionada] = useState('empleados'); // Por ahora solo una pestaña
@@ -65,16 +66,14 @@ const ConsultasPage = () => {
             Compras
           </button>
         </li>
-        {/* Puedes añadir más tabs así:
         <li className="nav-item">
           <button
-            className={`nav-link ${tabSeleccionada === 'productos' ? 'active' : ''}`}
-            onClick={() => setTabSeleccionada('productos')}
+            className={`nav-link ${tabSeleccionada === 'utilidades' ? 'active' : ''}`}
+            onClick={() => setTabSeleccionada('utilidades')}
           >
-            Productos
+            Utilidades
           </button>
         </li>
-        */}
       </ul>
       
       {/* Contenido de cada tab */}
@@ -96,6 +95,9 @@ const ConsultasPage = () => {
       </div>
       <div className="mt-4">
         {tabSeleccionada === 'compras' && <ConsultaCompras />}
+      </div>
+      <div className="mt-4">
+        {tabSeleccionada === 'utilidades' && <ConsultaUtilidades />}
       </div>
     </div>
   );

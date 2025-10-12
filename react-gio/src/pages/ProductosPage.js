@@ -57,8 +57,6 @@ function ProductosPage() {
       return;
     }
 
-    console.log('productos', productos); // Muestra la lista de productos en la consola
-
     try {
       // Realiza una solicitud POST al servidor con la lista de productos
       const res = await fetch('http://localhost:8080/productos', {
@@ -68,7 +66,7 @@ function ProductosPage() {
          },
         body: JSON.stringify(productos), // Envía la lista de productos como cuerpo de la solicitud
       });
-
+      
       if (!res.ok) {
         throw new Error('Error al registrar los productos'); // Manejo de errores
       }
@@ -143,7 +141,6 @@ function ProductosPage() {
     }
     } catch (error) {
       setMensaje('❌ Error en la búsqueda de productos');
-      console.error(error);
       setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: '' });
       setResultadosBusqueda([]); // Limpia los resultados de búsqueda
     }
@@ -158,8 +155,6 @@ function ProductosPage() {
         stock: parseInt(producto.stock, 10) || 0,
       };
 
-      console.log('Datos enviados al backend:', productoActualizado);
-
       const res = await fetch(`http://localhost:8080/productos/${producto.id}`, {
         method: 'PUT',
         headers: {
@@ -171,12 +166,24 @@ function ProductosPage() {
 
       if (!res.ok) throw new Error('Error al actualizar el producto');
 
+      const data = await res.json();
+
+      // ✅ Actualiza la lista de productos registrados
+    setProductosRegistrados((prev) => {
+      const existe = prev.find((p) => p.id === data.id);
+      if (existe) {
+        // Si ya existe, reemplaza el producto
+        return prev.map((p) => (p.id === data.id ? data : p));
+      } else {
+        // Si no existe, agrégalo
+        return [...prev, data];
+      }
+    });
+
       setMensaje('✅ Producto actualizado exitosamente');
       setProducto({ codigoBarras: '', nombreProducto: '', precioVenta: '', stock: ''});
-      console.log('Producto actualizado:', productoActualizado);
       setResultadosBusqueda([]);
     } catch (err) {
-      console.error(err);
       setMensaje('❌ Error al actualizar el producto');
     }
   };
