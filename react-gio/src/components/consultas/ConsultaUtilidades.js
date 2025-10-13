@@ -44,7 +44,6 @@ const ConsultaUtilidades = () => {
         },
       });
       console.log(res);
-      console.log(url);
 
       if (!res.ok) {
         if (res.status === 403) {
@@ -57,6 +56,7 @@ const ConsultaUtilidades = () => {
 
       const data = await res.json();
       setResultado(data);
+      console.log(data);
     } catch (error) {
       console.error(error);
       alert('Error al consultar utilidad');
@@ -111,7 +111,7 @@ const ConsultaUtilidades = () => {
         <div className="card bg-dark text-white p-3 mt-3">
           <h5>Resultado:</h5>
           <p><strong>Periodo:</strong> {resultado.periodo || `${fechaInicio} - ${fechaFin}`}</p>
-          <p><strong>Utilidad Total:</strong> ${resultado.utilidadTotal?.toLocaleString()}</p>
+          <p><strong>Utilidad Total:</strong> ${resultado.totalUtilidad?.toLocaleString()}</p>
         </div>
       )}
     </div>
