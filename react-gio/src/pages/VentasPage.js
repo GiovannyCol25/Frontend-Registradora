@@ -140,6 +140,9 @@ function VentasPage() {
             if (response.ok) {
             const data = await response.json();
             const listaClientes = Array.isArray(data) ? data : [data];
+            console.log("Clientes encontrados:", listaClientes);
+            console.log("Cliente buscado:", opcionCliente);
+            console.log("Respuesta completa:", response);
 
             if (listaClientes.length > 0){
                 setResultadosCliente(listaClientes);
@@ -187,7 +190,7 @@ function VentasPage() {
       };
 
       if (cliente && cliente.id) {
-        venta.cliente = cliente.id;
+        venta.clienteId = cliente.id;
       }
       
       const res = await fetch("http://localhost:8080/ventas", {
@@ -198,11 +201,14 @@ function VentasPage() {
         },
         body: JSON.stringify(venta),
       });
+      console.log("Respuesta de la venta:", res);
+      console.log("Datos enviados:", venta);
       // Verificar si la respuesta es exitosa
       if (!res.ok) throw new Error("Error al registrar la venta");
       // Si la respuesta es exitosa, limpiar el mensaje y estados
       const ventaRegistrada = await res.json();
       setVentaConfirmada(ventaRegistrada);
+      console.log("Venta registrada:", ventaRegistrada);
       setMensaje("✅ Venta registrada con éxito");
 
       // Limpiar estados

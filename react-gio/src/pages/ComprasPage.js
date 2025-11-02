@@ -1,6 +1,9 @@
 import React  from "react";
+// este componente contiene la lógica principal para gestionar las compras
 import TablaCompras from "../components/TablaCompras";
+// este componente contiene el formulario para agregar productos a la compra
 import FormularioCompras from "../components/FormularioCompras";
+// este componente muestra el resumen de la compra realizada
 import ResumenCompra from "../components/ResumenCompra";
 import { formatearMiles } from "../utils/formato";
 import TablaProveedores from "../components/TablaProveedores";
@@ -32,6 +35,7 @@ function ComprasPage() {
     const [proveedor, setProveedor] = React.useState(null);
     const [resultadosProveedor, setResultadosProveedor] = React.useState([]);
     const [numeroFactura, setNumeroFactura] = React.useState('');
+    const [fechaCompra, setFechaCompra] = React.useState('');
  
     const handleEnviar = (proveedor) => {
         setProveedor({
@@ -171,7 +175,7 @@ function ComprasPage() {
         return {
         productoId: p.id,
         cantidad: p.cantidad,
-        precioUnitario: p.precioUnitario ?? p.precioCompra ?? 0 // fallback
+        precioUnitario: p.precioUnitario ?? p.precioCompra ?? 0 
         };
     });
 
@@ -185,6 +189,7 @@ function ComprasPage() {
     const compra = {
         proveedorId: proveedor.id,
         numeroFactura: numeroFactura,
+        fechaCompra: fechaCompra || null,
         totalCompra: totalCompra,
         detalleCompraDtoList: productosValidados
     };
@@ -199,6 +204,8 @@ function ComprasPage() {
         },
         body: JSON.stringify(compra),
         });
+        console.log("Respuesta del servidor variable response:", response);
+        console.log("respuesta variable compra:", compra);
 
         if (!response.ok) {
         throw new Error("Error al registrar la compra");
@@ -220,6 +227,7 @@ function ComprasPage() {
         cantidad: 1,
         });
         setNumeroFactura('');
+        setFechaCompra('');
     } catch (error) {
         console.error("❌ Error al registrar la compra:", error);
         setMensaje("❌ Error al registrar la compra");
@@ -251,6 +259,8 @@ function ComprasPage() {
         compra={productosAgregados}
         numeroFactura={numeroFactura}
         setNumeroFactura={setNumeroFactura}
+        fechaCompra={fechaCompra}
+        setFechaCompra={setFechaCompra}
         />
         </div>
         <div className="col-md-6">

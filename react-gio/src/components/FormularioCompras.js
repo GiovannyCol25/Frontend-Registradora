@@ -18,17 +18,10 @@ function FormularioCompras({
   setCriterioProveedor,
   consultarProveedor,
   numeroFactura,
+  fechaCompra,
+  setFechaCompra,
   setNumeroFactura
 }) {
-
-
-  // Procesa el cambio en los inputs del producto
-/*  const handleChange = (e) => {
-    const { name, value } = e.target;
-    // Para campos numéricos, convierte el valor a número
-    const processedValue = ['cantidad', 'precioCompra'].includes(name) ? Number(value) : value;
-    setProducto({ ...producto, [name]: processedValue });
-  };*/
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -127,12 +120,24 @@ function FormularioCompras({
           name="numeroFactura"
           value={numeroFactura}
           onChange={(e) => setNumeroFactura(e.target.value)}
-          />
+          /> 
       </div>
 
         <div className="bg-card-dark mb-3 shadow-sm">
             <h5 className="text-center">Detalles del Producto</h5>
             <div className="row mb-3">
+                <div className="col-md-4">
+                    <label htmlFor="fechaCompra" className="fechaCompra">Fecha de compra</label>
+                    <input
+                        type="date"
+                        className="form-control form-control-dark"
+                        id="fechaCompra"
+                        name="fechaCompra"
+                        value={fechaCompra || ''}
+                        onChange={(e) => setFechaCompra(e.target.value)}
+                        />
+                </div>
+
                 <div className="col-md-4">
                     <label htmlFor="nombreProducto" className="form-label">Nombre</label>
                     <input 

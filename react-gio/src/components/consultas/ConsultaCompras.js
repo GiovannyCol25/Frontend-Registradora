@@ -114,79 +114,79 @@ const ConsultaCompras = () => {
   };
 
   return (
-    <div>
-      <h5>Consulta de Compras</h5>
+    <div className="container mt-9">
+      <h5 className='mb-4'>Consulta de Compras</h5>
+      
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label
+              htmlFor='tipoConsulta'
+              className="form-label">Tipo de Consulta</label>
+            <select
+              htmlFor="tipoConsulta"
+              name='tipoConsulta'
+              id='tipoConsulta'
+              className="form-select"
+              value={tipoConsulta}
+              onChange={(e) => setTipoConsulta(e.target.value)}
+            >
+              <option value="todas">Ver todas</option>
+              <option value="fechas">Por fechas</option>
+            </select>
+          </div>
 
-      <div className="row g-2 mb-3">
-        <div className="col-md-3">
-          <label
-            htmlFor='tipoConsulta'
-            className="form-label">Tipo de Consulta</label>
-          <select
-            htmlFor="tipoConsulta"
-            name='tipoConsulta'
-            id='tipoConsulta'
-            className="form-select"
-            value={tipoConsulta}
-            onChange={(e) => setTipoConsulta(e.target.value)}
-          >
-            <option value="todas">Ver todas</option>
-            <option value="fechas">Por fechas</option>
-          </select>
+          {tipoConsulta === 'fechas' && (
+            <>
+              <div className="col-md-4">
+                <label
+                  htmlFor='fechaInicio' 
+                  className="form-label"
+                  >Fecha Inicio</label>
+                <input
+                  htmlFor="fechaInicio"
+                  name='fechaInicio'
+                  id='fechaInicio'
+                  type="date"
+                  className="form-control"
+                  value={fechaInicio}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                />
+              </div>
+              <div className="col-md-4">
+                <label
+                  htmlFor='fechaFin'
+                  className="form-label"
+                  >Fecha Fin</label>
+                <input
+                  htmlFor="fechaFin"
+                  name='fechaFin'
+                  id='fechaFin'
+                  type="date"
+                  className="form-control"
+                  value={fechaFin}
+                  onChange={(e) => setFechaFin(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          <div className="col-md-6 mb-4">
+            <label
+              htmlFor='proveedorFiltro'
+              className="form-label"
+              >Filtrar por Proveedor</label>
+            <input
+              htmlFor="proveedorFiltro"
+              name='proveedorFiltro'
+              id="proveedorFiltro"
+              type="text"
+              className="form-control"
+              placeholder="Nombre proveedor"
+              value={proveedorFiltro}
+              onChange={(e) => setProveedorFiltro(e.target.value)}
+            />
+          </div>
         </div>
-
-        {tipoConsulta === 'fechas' && (
-          <>
-            <div className="col-md-3">
-              <label
-                htmlFor='fechaInicio' 
-                className="form-label"
-                >Fecha Inicio</label>
-              <input
-                htmlFor="fechaInicio"
-                name='fechaInicio'
-                id='fechaInicio'
-                type="date"
-                className="form-control"
-                value={fechaInicio}
-                onChange={(e) => setFechaInicio(e.target.value)}
-              />
-            </div>
-            <div className="col-md-3">
-              <label
-                htmlFor='fechaFin'
-                className="form-label"
-                >Fecha Fin</label>
-              <input
-                htmlFor="fechaFin"
-                name='fechaFin'
-                id='fechaFin'
-                type="date"
-                className="form-control"
-                value={fechaFin}
-                onChange={(e) => setFechaFin(e.target.value)}
-              />
-            </div>
-          </>
-        )}
-
-        <div className="col-md-3">
-          <label
-            htmlFor='proveedorFiltro'
-            className="form-label"
-            >Filtrar por Proveedor</label>
-          <input
-            htmlFor="proveedorFiltro"
-            name='proveedorFiltro'
-            id="proveedorFiltro"
-            type="text"
-            className="form-control"
-            placeholder="Nombre proveedor"
-            value={proveedorFiltro}
-            onChange={(e) => setProveedorFiltro(e.target.value)}
-          />
-        </div>
-      </div>
 
       <button
         className="btn btn-primary mb-3"
