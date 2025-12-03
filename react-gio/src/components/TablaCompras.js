@@ -12,40 +12,42 @@ function TablaCompras({ titulo = "Productos", compras, eliminarCompra, resultado
     return (
         <div className="bg-card-dark p-3 rounded text-white mb-4">
         <h5>Productos agregados a la Compra</h5>
-        <table className="table table-dark table-striped responsive">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {/* Aquí se renderizarían las compras */}
-            {compras.map((compra, index) => (
-                <tr key={compra.id}>
-                    <td>{compra.id}</td>
-                    <td>{compra.codigoBarras}</td>
-                    <td>{compra.nombreProducto}</td>
-                    <td>${formatearMiles(compra.precioCompra)}</td>
-                    <td>{compra.cantidad}</td>
-                    <td>${formatearMiles((compra.precioCompra * compra.cantidad).toFixed(2))}</td>
-                    <td>
-                        <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => eliminarCompra(index)}
-                        >
-                            Eliminar
-                        </button>
-                    </td>
+        <div className="table-responsive">
+            <table className="table table-dark table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {/* Aquí se renderizarían las compras */}
+                {compras.map((compra, index) => (
+                    <tr key={compra.id}>
+                        <td>{compra.id}</td>
+                        <td>{compra.codigoBarras}</td>
+                        <td>{compra.nombreProducto}</td>
+                        <td>${formatearMiles(compra.precioCompra)}</td>
+                        <td>{compra.cantidad}</td>
+                        <td>${formatearMiles((compra.precioCompra * compra.cantidad).toFixed(2))}</td>
+                        <td>
+                            <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() => eliminarCompra(index)}
+                            >
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        </div>
         </div>
     );
     }
